@@ -1,35 +1,24 @@
 from data_classes import Shape
 
-# General
-EPISODES = 600
+# MCTS parameters
+EPISODES = 100
+NUMBER_OF_ROLLOUTS = 10
+
+# Simulated World
+SIZE = 5  # 3 <= k <= 10
+GAME_TYPE = 'ledge'  # ledge | hex
+NUMBER_OF_STATES = SIZE ** 2
+NUMBER_OF_ACTIONS = SIZE ** 2
 VISUALIZE_GAMES = True
 FRAME_DELAY = 0.15
 
-# Simulated World
-BOARD_TYPE = Shape.Triangle
-SIZE = 5
-HOLES = set([
-    (2, 1),
-    # (3, 1),
-    # (3, 2),
-])
-WINNING_REWARD = 10
-LOSING_REWARD = -1
-STEP_REWARD = 0
 
-# Actor
+# Actor-NET
 ACTOR_LEARNING_RATE = 0.001
-ACTOR_DISCOUNT_FACTOR = 0.9
-ACTOR_TRACE_DECAY = 0.88
+ACTOR_ACTIVATION_FUNCTION = 'relu'  # linear, sigmoid, tanh, relu
+ACTOR_OPTIMIZER = 'Adagrad'  # Adagrad, Stochastic GradientDescent (SGD), RMSProp, or Adam
+ACTOR_CACHING_INTERVAL = 5
+ACTOR_NN_DIMENSIONS = (NUMBER_OF_STATES, 10, 30, 5, NUMBER_OF_ACTIONS)
 
-ACTOR_EPSILON = 1
-ACTOR_EPSILON_DECAY = 0.9992
-
-# Critic
-CRITIC_LEARNING_RATE = 0.0001
-CRITIC_DISCOUNT_FACTOR = 0.9
-CRITIC_TRACE_DECAY = 0.8
-
-USE_TABLE_CRITIC = False
-INPUT_DIMENSION = SIZE ** 2 if BOARD_TYPE == Shape.Diamond else int((SIZE * (SIZE + 1)) / 2)
-CRITIC_NN_DIMENSIONS = (INPUT_DIMENSION, 10, 30, 5, 1)
+# TOPP parameters
+NUMBER_OF_GAMES = 4
