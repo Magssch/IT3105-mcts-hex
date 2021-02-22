@@ -1,3 +1,10 @@
+# flake8: noqa
+# type: ignore
+""" BasicClientActorAbs.py
+    Provided by the IT3105 staff
+    This file should not be modified
+    isort:skip_file
+"""
 import pprint
 import socket, ssl, pprint, getpass
 import random
@@ -295,7 +302,3 @@ class BasicClientActorAbs(ABC):
                 col = index % size
                 empty_locs.append((row, col))
         return random.choice(empty_locs)
-
-
-
-
