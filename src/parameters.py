@@ -3,6 +3,7 @@ from data_classes import Shape
 # MCTS parameters
 EPISODES = 100
 NUMBER_OF_ROLLOUTS = 10
+UCT_C = 1 # "Often 1" (see https://prod.liveshare.vsengsaas.visualstudio.com/join?89DF72862A01B0CD8E1C3D48F4FDE0B3500A)
 
 # Simulated World
 SIZE = 5  # 3 <= k <= 10

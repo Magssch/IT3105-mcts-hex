@@ -19,6 +19,7 @@ class SimulatedWorld:
         self.__peg_history = []
         self.__memoized_legal_actions = {}
         print('Initial board:')
+
         print(self.__game_board)
 
     def __is_final_state(self) -> bool:
