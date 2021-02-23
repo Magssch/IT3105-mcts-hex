@@ -20,46 +20,37 @@ class ReinforcementLearner:
     """
 
     def __init__(self):
-        self.__actor = Actor(
-            parameters.ACTOR_LEARNING_RATE,
-            parameters.ACTOR_DISCOUNT_FACTOR,
-            parameters.ACTOR_TRACE_DECAY,
-            parameters.ACTOR_EPSILON,
-            parameters.ACTOR_EPSILON_DECAY,
-        )
-        self.__critic = CriticFactory.get_critic(
-            parameters.USE_TABLE_CRITIC,
-            parameters.CRITIC_LEARNING_RATE,
-            parameters.CRITIC_DISCOUNT_FACTOR,
-            parameters.CRITIC_TRACE_DECAY,
-            parameters.CRITIC_NN_DIMENSIONS,
-        )
-
         self.__simulated_world = SimulatedWorld()
         self.__episodes = parameters.EPISODES
+        self.__number_of_rollouts = parameters.NUMBER_OF_ROLLOUTS
+        self.__caching_interval = parameters.ACTOR_CACHING_INTERVAL
 
-    def __run_one_episode(self, visualize: bool = False) -> None:
-        self.__actor.reset_eligibilities()
-        self.__critic.reset_eligibilities()
-
-        state, possible_actions = self.__simulated_world.reset()
-        action = self.__actor.choose_action(state, possible_actions)
-
-        done = False
-
-        while not done:
-            next_state, reward, done, possible_actions = self.__simulated_world.step(action, visualize)
-            next_action = self.__actor.choose_action(next_state, possible_actions)
-
-            self.__actor.replace_eligibilities(state, action)
-            self.__critic.replace_eligibilities(state)
-
-            td_error = self.__critic.td_error(reward, next_state, state)
-
-            self.__critic.update(reward, next_state, state)
-            self.__actor.update(td_error)
-
-            state, action = next_state, next_action
+    def __run_one_episode(self,) -> None:
+        # i_s = __caching_interval  # save interval for ANET (the actor network) parameters
+        # Clear Replay Buffer (RBUF)
+        # Randomly initialize parameters (weights and biases) of ANET
+        # for g_a in number_actualgames:
+        #     (a)  Initialize the actual game board (Ba) to an empty board.
+        #     (b)  s_init = startingboardstate
+        #     (c)  Initialize the Monte Carlo Tree (MCT) to a singleroot, which representssinit
+        #     (d)  while B_a not in a final state:
+        #             Initialize Monte Carlo game board (Bmc) to same state as root.
+        #             for g_s in self.__number_of_rollouts:
+        #                 Use tree policy P_t to search from root to a leaf (L) of MCT. UpdateBmcwith each move.
+        #                 Use ANET to choose rollout actions from L to a final state (F). UpdateBmcwith each move.
+        #                 Perform MCTS backpropagation from F to root.
+        #             next = g_s
+        #             D = distribution of visit counts in MCT along all arcs emanating from root.
+        #             Add case (root, D) to RBUF
+        #             Choose actual move (a*) based on D
+        #             Perform a* on root to produce successor state s*•UpdateBato s*
+        #             In MCT, retain subtree rooted at s*; discard everything else.
+        #             root = s*
+        #     (e)  Train ANET on a random minibatch of cases from RBUF
+        #     (f)  if g_a % i_s == 0:
+        #             Save ANET’s current parameters for later use in tournament play.
+        # next g_a
+        pass
 
     def run(self) -> None:
         """
@@ -71,11 +62,7 @@ class ReinforcementLearner:
             self.__run_one_episode()
 
         print('Training completed.')
-        self.__actor.plot_training_data()
-        self.__critic.plot_training_data()
         self.__simulated_world.plot_training_data()
 
         if parameters.VISUALIZE_GAMES:
             print('Showing one episode with the greedy strategy.')
-            self.__actor.set_epsilon(0)
-            self.__run_one_episode(True)
