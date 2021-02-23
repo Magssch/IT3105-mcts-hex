@@ -9,7 +9,7 @@ UCT_C = 1 # "Often 1" (see https://prod.liveshare.vsengsaas.visualstudio.com/joi
 SIZE = 5  # 3 <= k <= 10
 GAME_TYPE = 'ledge'  # ledge | hex
 NUMBER_OF_STATES = SIZE ** 2
-NUMBER_OF_ACTIONS = SIZE ** 2
+NUMBER_OF_ACTIONS = SIZE ** 2=
 VISUALIZE_GAMES = True
 FRAME_DELAY = 0.15
 

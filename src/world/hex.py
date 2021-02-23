@@ -1,13 +1,13 @@
-from abc import ABC
 from typing import List, Set, Tuple
 
 import numpy as np
+from simulated_world import SimulatedWorld
 
 from data_classes import Action, Shape
 from visualize import Visualize
 
 
-class HexagonalBoard(ABC):
+class Hex(SimulatedWorld):
 
     def __init__(self, board_type: Shape, size: int, holes: Set[Tuple[int, int]]):
         self.__board_type = board_type
@@ -86,37 +86,3 @@ class HexagonalBoard(ABC):
 
     def __str__(self):
         return str(self.__board)
-
-
-class Diamond(HexagonalBoard):
-    def __init__(self, board_type: Shape, size: int, holes: Set[Tuple[int, int]]):
-        super().__init__(
-            board_type,
-            size,
-            holes,
-        )
-        self._edges = set([
-            (0, -1),
-            (1, -1),
-            (1, 0),
-            (0, 1),
-            (-1, 1),
-            (-1, 0),
-        ])
-
-
-class Triangle(HexagonalBoard):
-    def __init__(self, board_type: Shape, size: int, holes: Set[Tuple[int, int]]):
-        super().__init__(
-            board_type,
-            size,
-            holes,
-        )
-        self._edges = set([
-            (0, -1),
-            (-1, -1),
-            (1, 0),
-            (0, 1),
-            (-1, 0),
-            (1, 1),
-        ])
