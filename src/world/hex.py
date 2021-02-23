@@ -17,7 +17,7 @@ class Hex(SimulatedWorld):
 
     def __init__(self, state: Tuple[int]=None):
         self.__size: int = parameters.SIZE
-        self.__length = se
+        self.__length = self.__size ** 2
 
         self.player_one_columns = [False for _ in range(self.__size)]
         self.player_two_rows = [False for _ in range(self.__size)]

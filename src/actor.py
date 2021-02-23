@@ -18,6 +18,7 @@ class Actor:
     Methods
     -------
     choose_action(state, possible_actions):
+
         Epsilon-greedy action selection function.
     update(td_error):
         Updates the policy function, then eligibilities for each state-action
