@@ -1,12 +1,11 @@
+from collections import deque
 from typing import List, Set, Tuple
 
-import numpy as np
-from simulated_world import SimulatedWorld
-
-from data_classes import Action, Shape
+from data_classes import Action
+from src import parameters
 from visualize import Visualize
-import ..parameters
-from collections import deque
+from world.simulated_world import SimulatedWorld
+
 
 class Hex(SimulatedWorld):
 
@@ -19,87 +18,87 @@ class Hex(SimulatedWorld):
         self.__size: int = parameters.SIZE
         self.__length = self.__size ** 2
 
-        self.player_one_columns = [False for _ in range(self.__size)]
-        self.player_two_rows = [False for _ in range(self.__size)]
+        self.__modified_list = {
+            1: [False for _ in range(self.__size)],
+            2: [False for _ in range(self.__size)]
+        }
+        self.__ending_indices = {
+            1: set([self.__size * (i + 1) - 1 for i in range(self.__size)]),
+            2: set([self.__length - (i + 1) for i in range(self.__size)]),
+        }
 
-        self.__ending_indices = (_, set([i for i in range(self.__size)]), set([i * self.__size for i in range(self.__size)]))
-
-        if self.__board == None:
+        if state == None:
             self.__player_id, *self.__board = self.reset()
         else:
             self.__player_id, *self.__board = state
-    
-    def reset() -> Tuple[int]:
+
+    def reset(self) -> Tuple[int, ...]:
         self.__player_id = 1
-        self.__board = tuple(0 for _ in self.__size ** 2)
+        self.__board = tuple(0 for _ in range(self.__length))
         return self.__get_state()
 
-    def generate_child_states(state: Tuple[int]) -> Tuple[Tuple[int]]:
+    def generate_child_states(self, state: Tuple[int]) -> Tuple[Tuple[int, ...]]:
         pass
-    
-    def is_final_state() -> bool:
+
+    def is_final_state(self) -> bool:
         """
         Checks whether the current player has won the game.
         """
-        # Only do BFS if player has sufficient number of pegs in rows for a possible win
-        if self.__player_id == 1:
-            if sum(self.__player_two_rows) < self.__size:
-                return False
-        else:
-            if sum(self.__player_one_columns) < self.__size:
-                return False
+        if sum(self.__modified_list[self.__player_id]) < self.__size:  # Does the player have the sufficient amount of pegs along its axis?
+            return False
 
+        # Sufficient amount of pegs, check for path using BFS
         visited_cells = set()
         for i in range(self.__size):
             index = i if self.__player_id == 1 else i * self.__size
             if self.__board[index] == self.__player_id and self.__board[index] not in visited_cells:
-                
+
                 # BFS
                 visited_cells.add(index)
                 queue = deque()
                 queue.append(index)
                 while len(queue) > 0:
-                    current_node = queue.popleft()
-                    for neighbour in self.__get_neighbouring_nodes(current_node):
+                    current_cell = queue.popleft()
+                    for neighbour in self.__get_filled_neighbours(current_cell):
                         if neighbour not in visited_cells:
                             queue.append(neighbour)
                             if neighbour in self.__ending_indices[self.__player_id]:
                                 return True
-                    visited_cells.add(current_node) 
+                    visited_cells.add(current_cell)
         return False
-                
 
-
-        
-
-    
-    def step(action: Tuple[int, int]) -> Tuple[int]:
+    def step(self, action: Tuple[int, int]) -> Tuple[int, ...]:
         index = self.__coordinates_to_index(action)
-        assert 0 <= index < self.__size ** 2, 'Index out of range'
-        assert self.__board[action] == 0
-        
-        self.__board[index] = self.__player_id
+        assert 0 <= index < self.__size ** 2, 'Illegal action, index out of range'
+        assert self.__board[index] == 0, 'Illegal action, cell is occupied'
+
+        self.__board = tuple(self.__board[:index] + (self.__player_id,) + self.__board[index:])
+        self.__modified_list[self.__player_id][self.__player_axis(action)] = True  # Used to speed up winning condition check
         self.__player_id = Hex.opposite_player[self.__player_id]
         return self.__get_state()
-        
-    def __get_state() -> Tuple[int]:
-        return (self.__player_id, **self.__board)
 
-    def __coordinates_to_index(coordinates: Tuple[int, int]) -> int:
-        return (coordinates[0] * self.size) + coordinates[1]
-        
-    def __get_filled_neighbours(index: int) -> Set[int, ...]:
-        return set(filter(lambda node: 0 <= node < self.__size ** 2 and self.board[node] == self.__player_id, self.__get_neighbouring_nodes))
-    
-    def __get_neighbouring_indices(index: int) -> Set[int, ...]:
-            return {
-                index-self.__size,
-                index + self.__size, 
-                index + 1,
-                index - 1,
-                index-self.__size+1,
-                index + self.__size - 1
-            }
+    def __get_state(self) -> Tuple[int, ...]:
+        return (self.__player_id, *self.__board)
+
+    def __player_axis(self, action: Tuple[int, int]) -> int:
+        row, column = action
+        return row * int(self.__player_id == 2) + column * int(self.__player_id == 1)
+
+    def __coordinates_to_index(self, coordinates: Tuple[int, int]) -> int:
+        return (coordinates[0] * self.__size) + coordinates[1]
+
+    def __get_filled_neighbours(self, index: int) -> Set[int]:
+        return set(filter(lambda cell: 0 <= cell < self.__length and self.__board[cell] == self.__player_id, self.__get_neighbouring_indices(index)))
+
+    def __get_neighbouring_indices(self, index: int) -> Set[int]:
+        return {
+            index - self.__size,
+            index + self.__size,
+            index + 1,
+            index - 1,
+            index - self.__size + 1,
+            index + self.__size - 1
+        }
         """
         up = self.__board[index-self.__size]
         down = self.__board[index + self.__size]
@@ -109,10 +108,6 @@ class Hex(SimulatedWorld):
         # upleft = self.__board[index-self.__size-1]
         # downright = self.__board[index + self.__size+1]
         downleft = self.__board[index + self.__size-1]"""
-
-
-    def __get_board(self):
-        return self.__board
 
     def __draw_board(self, action: Action) -> None:
         Visualize.draw_board(self.__board_type, self.__board, action.positions)

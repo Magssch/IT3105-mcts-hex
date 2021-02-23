@@ -1,15 +1,15 @@
-from data_classes import Shape
+from data_classes import Game
 
 # MCTS parameters
 EPISODES = 100
 NUMBER_OF_ROLLOUTS = 10
-UCT_C = 1 # "Often 1" (see https://prod.liveshare.vsengsaas.visualstudio.com/join?89DF72862A01B0CD8E1C3D48F4FDE0B3500A)
+UCT_C = 1 # "Often 1"
 
 # Simulated World
 SIZE = 5  # 3 <= k <= 10
-GAME_TYPE = 'ledge'  # ledge | hex
+GAME_TYPE = Game.Ledge
 NUMBER_OF_STATES = SIZE ** 2
-NUMBER_OF_ACTIONS = SIZE ** 2=
+NUMBER_OF_ACTIONS = SIZE ** 2
 VISUALIZE_GAMES = True
 FRAME_DELAY = 0.15
 

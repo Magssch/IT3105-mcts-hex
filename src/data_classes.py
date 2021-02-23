@@ -27,6 +27,6 @@ class Action:
         return (self.start_coordinates == other.start_coordinates) and (self.direction_vector == other.direction_vector)
 
 
-class Shape(Enum):
-    Diamond = 1
-    Triangle = 2
+class Game(Enum):
+    Ledge = 1
+    Hex = 2
