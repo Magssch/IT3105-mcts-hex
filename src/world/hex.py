@@ -1,5 +1,5 @@
 from collections import deque
-from typing import List, Set, Tuple
+from typing import List, Optional, Set, Tuple
 
 from data_classes import Action
 from src import parameters
@@ -14,7 +14,7 @@ class Hex(SimulatedWorld):
         2: 1,
     }
 
-    def __init__(self, state: Tuple[int]=None):
+    def __init__(self, state: Optional[Tuple[int, ...]]):
         self.__size: int = parameters.SIZE
         self.__length = self.__size ** 2
 
