@@ -32,4 +32,4 @@ class MCT:
         pass
 
     def UCT(self, node: TreeNode) -> float:
-        return node.score / node.visits + parameters.UCT_C * sqrt(2 * log(self.root.visits) / node.visits)
+        return node.value + parameters.UCT_C * sqrt(2 * log(self.root.visit_count) / node.visit_count)

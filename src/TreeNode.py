@@ -7,11 +7,17 @@ class TreeNode:
 
     def __init__(self, state: Tuple[int], parent: Optional[TreeNode]) -> None:
         self.state = state
-        self.visits = 0
-        self.score = 0
         self.is_terminal = False
+
+        self.score = 0
+        self.visit_count = 0
+
         self.parent = parent
         self.children = {}
+
+    @property
+    def value(self):
+        return self.score / self.visit_count
 
     def __eq__(self, o: TreeNode) -> bool:
         return self.state == o.state
