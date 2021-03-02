@@ -3,7 +3,6 @@ from __future__ import annotations
 from collections import deque
 from typing import List, Optional, Set, Tuple
 
-from data_classes import Action
 from src import parameters
 from visualize import Visualize
 from world.simulated_world import SimulatedWorld
@@ -16,6 +15,7 @@ from world.simulated_world import SimulatedWorld
 #     def connect(self, otherPeg: Peg):
 #         self.connect_pegs.union(otherPeg.connect_pegs)
 #         return self.connect_pegs
+
 
 class Hex(SimulatedWorld):
 

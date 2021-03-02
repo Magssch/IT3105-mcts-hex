@@ -1,4 +1,7 @@
-from data_classes import Game
+from keras.activations import linear, relu, sigmoid, tanh  # noqa
+from keras.optimizers import SGD, Adagrad, Adam, RMSprop  # noqa
+
+from .types import Game
 
 # MCTS parameters
 EPISODES = 100
@@ -14,12 +17,13 @@ VISUALIZE_GAMES = True
 FRAME_DELAY = 0.15
 LEDGE_BOARD = (0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 2, 0, 0, 1, 1, 1)  # (0,2,0,1,0,1,1,1,0,0,0,0,1,0,1,0,1)
 
-# Actor-NET
-ACTOR_LEARNING_RATE = 0.001
-ACTOR_ACTIVATION_FUNCTION = 'relu'  # linear, sigmoid, tanh, relu
-ACTOR_OPTIMIZER = 'Adagrad'  # Adagrad, Stochastic GradientDescent (SGD), RMSProp, or Adam
-ACTOR_CACHING_INTERVAL = 5
-ACTOR_NN_DIMENSIONS = (NUMBER_OF_STATES + 1, 10, 30, 5, NUMBER_OF_ACTIONS)
+# ANET
+ANET_EPSILON = 0.9
+ANET_LEARNING_RATE = 0.001
+ANET_ACTIVATION_FUNCTION = relu  # linear, relu, sigmoid, or tanh
+ANET_OPTIMIZER = Adam  # SGD, Adagrad, Adam, or RMSprop
+ANET_CACHING_INTERVAL = 5
+ANET_DIMENSIONS = (NUMBER_OF_STATES + 1, 10, 30, 5, NUMBER_OF_ACTIONS)
 
 # TOPP parameters
 NUMBER_OF_GAMES = 4

@@ -1,7 +1,8 @@
 import random
 
-import parameters
 from MCT import MCT
+
+import parameters
 from world import SimulatedWorld
 
 

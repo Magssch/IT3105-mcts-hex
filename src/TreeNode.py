@@ -10,7 +10,7 @@ class TreeNode:
         self.__is_terminal: bool = False
 
         self.score = 0
-        self.visit_count = 0
+        self.visits = 0
 
         self.parent = parent
         self.children: Dict[int, TreeNode] = {}
@@ -25,7 +25,7 @@ class TreeNode:
 
     @property
     def value(self) -> float:
-        return self.score / self.visit_count
+        return self.score / self.visits
 
     def add_node(self, action: int, state: Tuple[int, ...]) -> TreeNode:
         child_node = TreeNode(state)

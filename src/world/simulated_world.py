@@ -13,6 +13,10 @@ class SimulatedWorld(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    def get_legal_actions(self, state: Tuple[int, ...]) -> Tuple[bool, ...]:
+        raise NotImplementedError
+
+    @abstractmethod
     def is_final_state(self) -> bool:
         raise NotImplementedError
 
