@@ -1,3 +1,4 @@
+from __future__ import annotations
 from collections import deque
 from typing import List, Optional, Set, Tuple
 
@@ -6,6 +7,15 @@ from src import parameters
 from visualize import Visualize
 from world.simulated_world import SimulatedWorld
 
+
+# class Peg:
+
+#     def __init__(self) -> None:
+#         self.connect_pegs = set(self)
+
+#     def connect(self, otherPeg: Peg):
+#         self.connect_pegs.union(otherPeg.connect_pegs)
+#         return self.connect_pegs
 
 class Hex(SimulatedWorld):
 
@@ -27,7 +37,7 @@ class Hex(SimulatedWorld):
             2: set([self.__length - (i + 1) for i in range(self.__size)]),
         }
 
-        if state == None:
+        if state is None:
             self.__player_id, *self.__board = self.reset()
         else:
             self.__player_id, *self.__board = state
@@ -37,8 +47,17 @@ class Hex(SimulatedWorld):
         self.__board = tuple(0 for _ in range(self.__length))
         return self.__get_state()
 
-    def generate_child_states(self, state: Tuple[int]) -> Tuple[Tuple[int, ...]]:
-        pass
+    def generate_possible_actions(self, state: Tuple[int]) -> Tuple[int, ...]:
+        actions = [i for i in range(self.__size)]
+        return tuple(filter(lambda node: self.__board[node] > 0, actions))
+
+    def generate_child_states(self, state: Tuple[int]) -> Tuple[Tuple[int, ...], ...]:
+        child_states = []
+        for i in self.generate_possible_actions(state):
+            child_state = list(state)
+            child_state[i] = self.__player_id
+            child_states += tuple(child_state)
+        return tuple(child_states)
 
     def is_final_state(self) -> bool:
         """

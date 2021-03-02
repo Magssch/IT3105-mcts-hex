@@ -1,35 +1,63 @@
-from typing import Tuple
+from typing import Callable, Tuple
 
 from TreeNode import TreeNode
 from src import parameters
 from math import sqrt, log
+
+from world.simulated_world import SimulatedWorld
+
+
+Policy = Callable[[Tuple[int, ...]], Tuple[int, int]]  # s -> a
+
+
 class MCT:
 
-    def search(self, initial_state: Tuple[int, ...]) -> TreeNode:
+    def __init__(self, initial_state: Tuple[int, ...]) -> None:
         self.root = TreeNode(initial_state)
-        # ...
-        # return leafNode
+        self.action_space = parameters.NUMBER_OF_ACTIONS
 
-    def do_rollout(self, node: TreeNode, ANET) -> TreeNode:
+    def set_root(self, node: TreeNode) -> None:
+        node.parent = None
+        self.root = node
+
+    def get_normalized_distribution(self) -> Tuple[float, ...]:
+        distribution = []
+        for action in range(self.action_space):
+            if action in self.root.children:
+                distribution[action] = self.root.children[action].visit_count / self.root.visit_count
+            else:
+                distribution[action] = 0
+        return tuple(distribution)
+
+    def tree_search(self, node: TreeNode, world: SimulatedWorld) -> TreeNode:
+        current_node = node
+        while not current_node.is_leaf:
+            current_node = self.tree_policy(current_node)  # <- tree policy
+        return current_node
+
+    def do_rollout(self, node: TreeNode, default_policy: Policy, world: SimulatedWorld) -> TreeNode:
         current_node = node
         while not current_node.is_terminal:
-            current_node = ANET(current_node)  # <- default policy
-            current_node.visits += 1
-            # Update ...
-        # return finalNode
+            action = default_policy(current_node.state)
+            next_state = world.step(action)
+            current_node = current_node.add_node(action, next_state)
+        return current_node
 
     def do_backpropagation(self, node: TreeNode, score: int) -> None:
         child = node
         parent = node.parent
-        while parent != None:
+        while parent is not None:
             parent.score += child.score
             parent = parent.parent
 
-    def get_normalized_distribution(self) -> Tuple[int, ...]:
-        pass
-
     def add_child_node(self, node: TreeNode) -> None:
         pass
+
+    def tree_policy(self, node: TreeNode) -> TreeNode:
+        """
+        Choses a child node based on the UCT score
+        """
+        return max(node.children.values(), key=self.UCT)
 
     def UCT(self, node: TreeNode) -> float:
         return node.value + parameters.UCT_C * sqrt(2 * log(self.root.visit_count) / node.visit_count)

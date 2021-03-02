@@ -1,6 +1,6 @@
 import random
 
-from simulated_world import SimulatedWorld
+from world import SimulatedWorld
 
 import parameters
 from MCT import MCT
@@ -23,7 +23,7 @@ class ReinforcementLearner:
 
     def __init__(self) -> None:
         self.__simulated_world = SimulatedWorld()  # (a) =B_a
-        self.__replay_buffer = [] # RBUF
+        self.__replay_buffer = []  # RBUF
         self.__ANET = ANET()
 
         self.__episodes = parameters.EPISODES
@@ -32,31 +32,31 @@ class ReinforcementLearner:
 
     def __run_one_episode(self,) -> None:
         root = self.__simulated_world.reset()  # (b)
-        monte_carlo_tree = MCT(root)  # (c) 
+        monte_carlo_tree = MCT(root)  # (c)
 
         while not self.__simulated_world.is_final_state():  # (d)
             B_mc = SimulatedWorld(root)  # (d.1)
-            
-            for search_game in range(self.__number_of_rollouts): # (d.2) search_game brukes ikke til noe
-                leaf_node = monte_carlo_tree.search(root)  # (d.3) tree_policy (UCB1 / UCT)
+
+            for search_game in range(self.__number_of_rollouts):  # (d.2) search_game brukes ikke til noe
+                leaf_node = monte_carlo_tree.tree_search(root)  # (d.3) tree_policy (UCB1 / UCT)
                 # TODO: Node expansion!
-                final_node = monte_carlo_tree.do_rollout(leaf_node, self.__ANET)  #  (d.4)
+                final_node = monte_carlo_tree.do_rollout(leaf_node, self.__ANET)  # (d.4)
                 monte_carlo_tree.do_backpropagation(final_node)  # (d.5)
-            
+
             D = monte_carlo_tree.get_normalized_distribution()  # (d.6) ??
             self.__replay_buffer.append((root, D))  # (d.7)
             action = self.__ANET.choose_action((root, D))  # (d.8) argmax based on softmax
             next_state = self.__simulated_world.step(action)  # (d.9)
             monte_carlo_tree.set_root(next_state)
             root = next_state
-        
+
         self.__ANET.fit(random.choices(self.__replay_buffer, k=10))  # (e)
 
         # (a)  Initialize the actual game board (B_a) to an empty board.
         # (b)  s_init = startingboardstate
-        # (c)  Initialize the Monte Carlo Tree (MCT) to a single root, which represents s_init.        
+        # (c)  Initialize the Monte Carlo Tree (MCT) to a single root, which represents s_init.
         # (d)  while B_a not in a final_state:
-        #         Initialize Monte Carlo game board (B_mc) to same state as root.    
+        #         Initialize Monte Carlo game board (B_mc) to same state as root.
         #         for g_s in self.__number_of_rollouts:
         #             Use tree policy P_t to search from root to a leaf (L) of MCT. Update B_mc with each move.
         #             Use ANET to choose rollout actions from L to a final state (F). Update B_mc with each move.
@@ -90,4 +90,3 @@ class ReinforcementLearner:
 
         if parameters.VISUALIZE_GAMES:
             print('Showing one episode with the greedy strategy.')
-
