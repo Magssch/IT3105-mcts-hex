@@ -1,9 +1,8 @@
 import random
 
-from world import SimulatedWorld
-
 import parameters
 from MCT import MCT
+from world import SimulatedWorld
 
 
 class ReinforcementLearner:

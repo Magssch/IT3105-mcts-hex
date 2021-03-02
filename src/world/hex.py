@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from collections import deque
 from typing import List, Optional, Set, Tuple
 
@@ -6,7 +7,6 @@ from data_classes import Action
 from src import parameters
 from visualize import Visualize
 from world.simulated_world import SimulatedWorld
-
 
 # class Peg:
 
@@ -47,14 +47,14 @@ class Hex(SimulatedWorld):
         self.__board = tuple(0 for _ in range(self.__length))
         return self.__get_state()
 
-    def generate_possible_actions(self, state: Tuple[int]) -> Tuple[int, ...]:
+    def generate_possible_actions(self) -> Tuple[int, ...]:
         actions = [i for i in range(self.__size)]
         return tuple(filter(lambda node: self.__board[node] > 0, actions))
 
-    def generate_child_states(self, state: Tuple[int]) -> Tuple[Tuple[int, ...], ...]:
+    def generate_child_states(self) -> Tuple[Tuple[int, ...], ...]:
         child_states = []
-        for i in self.generate_possible_actions(state):
-            child_state = list(state)
+        for i in self.generate_possible_actions():
+            child_state = list(self.__board)
             child_state[i] = self.__player_id
             child_states += tuple(child_state)
         return tuple(child_states)

@@ -1,11 +1,9 @@
+from math import log, sqrt
 from typing import Callable, Tuple
 
-from TreeNode import TreeNode
 from src import parameters
-from math import sqrt, log
-
+from TreeNode import TreeNode
 from world.simulated_world import SimulatedWorld
-
 
 Policy = Callable[[Tuple[int, ...]], Tuple[int, int]]  # s -> a
 
