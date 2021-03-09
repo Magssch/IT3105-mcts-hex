@@ -1,7 +1,7 @@
 import math
 from typing import List, Optional, Tuple
 
-from src import parameters
+import parameters
 from world.simulated_world import SimulatedWorld
 
 
@@ -31,7 +31,7 @@ class Ledge(SimulatedWorld):
             self.__board[coin_position] = 0
         return self.__get_state()
 
-    def get_legal_actions(self, state: Tuple[int, ...]) -> Tuple[int, ...]:
+    def get_legal_actions(self) -> Tuple[int, ...]:
         pass
 
     def generate_child_states(self) -> Tuple[Tuple[int, ...], ...]:

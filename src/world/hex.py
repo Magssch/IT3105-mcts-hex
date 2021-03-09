@@ -3,8 +3,8 @@ from __future__ import annotations
 from collections import deque
 from typing import List, Optional, Set, Tuple
 
-from src import parameters
-from visualize import Visualize
+import parameters
+# from visualize import Visualize
 from world.simulated_world import SimulatedWorld
 
 # class Peg:
@@ -48,8 +48,7 @@ class Hex(SimulatedWorld):
         return self.__get_state()
 
     def get_legal_actions(self) -> Tuple[int, ...]:
-        actions = [i for i in range(self.__size)]
-        return tuple(filter(lambda node: self.__board[node] > 0, actions))
+        return tuple(1 if i == 0 else 0 for i in self.__board)
 
     def generate_child_states(self) -> Tuple[Tuple[int, ...], ...]:
         child_states = []
@@ -132,4 +131,5 @@ class Hex(SimulatedWorld):
         downleft = self.__board[index + self.__size-1]"""
 
     def __draw_board(self, action: int) -> None:
-        Visualize.draw_board(self, self.__board, action)
+        pass
+        # Visualize.draw_board(self, self.__board, action)

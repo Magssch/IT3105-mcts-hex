@@ -10,7 +10,7 @@ from keras.losses import categorical_crossentropy
 from keras.models import Sequential
 from keras.utils import normalize
 
-from src import parameters
+import parameters
 
 
 class ANET:
@@ -73,7 +73,7 @@ class ANET:
         return random.choice([i for i, _ in enumerate(valid_actions) if i == 1])
 
     def choose_greedy(self, state: Tuple[int, ...], valid_actions: Tuple[int, ...]) -> int:
-        action_probabilities = self.__model(state)
+        action_probabilities = self.__model(tf.convert_to_tensor(state))
         action_probabilities = action_probabilities * np.array(valid_actions)
         action_probabilities = normalize(action_probabilities)
         return np.argmax(action_probabilities)[0]

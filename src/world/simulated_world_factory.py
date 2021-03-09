@@ -2,8 +2,8 @@ from typing import Optional, Tuple
 from .simulated_world import SimulatedWorld
 from .ledge import Ledge
 from .hex import Hex
-from src import parameters
-from src.types import Game
+import parameters
+from game import Game
 
 
 class SimulatedWorldFactory:

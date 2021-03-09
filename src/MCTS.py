@@ -1,7 +1,7 @@
 from math import log, sqrt
 from typing import Callable, Tuple
 
-from src import parameters
+import parameters
 from TreeNode import TreeNode
 from world.simulated_world import SimulatedWorld
 
@@ -36,7 +36,7 @@ class MCTS:
 
         # Node expansion
         if current_node.visits != 0:
-            for action in world.get_legal_actions(current_node.state):
+            for action in world.get_legal_actions():
                 current_node.add_node(action, world.generate_state(action))  # ??
             current_node = list(current_node.children.values())[0]
 
@@ -46,7 +46,7 @@ class MCTS:
         current_state = leaf_node.state
         reward = 0
         while not world.is_final_state():
-            legal_actions = world.get_legal_actions(current_state)
+            legal_actions = world.get_legal_actions()
             action = default_policy(current_state, legal_actions)
             current_state, reward = world.step(action)
         return reward
