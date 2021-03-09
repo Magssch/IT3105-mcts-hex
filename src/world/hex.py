@@ -47,17 +47,20 @@ class Hex(SimulatedWorld):
         self.__board = tuple(0 for _ in range(self.__length))
         return self.__get_state()
 
-    def generate_possible_actions(self) -> Tuple[int, ...]:
+    def get_legal_actions(self) -> Tuple[int, ...]:
         actions = [i for i in range(self.__size)]
         return tuple(filter(lambda node: self.__board[node] > 0, actions))
 
     def generate_child_states(self) -> Tuple[Tuple[int, ...], ...]:
         child_states = []
-        for i in self.generate_possible_actions():
-            child_state = list(self.__board)
-            child_state[i] = self.__player_id
-            child_states += tuple(child_state)
+        for i in self.get_legal_actions():
+            child_states += self.generate_state(i)
         return tuple(child_states)
+
+    def generate_state(self, action: int) -> Tuple[int, ...]:
+        next_board = list(self.__board)
+        next_board[action] = self.__player_id
+        return (Hex.opposite_player[self.__player_id], *next_board)
 
     def is_final_state(self) -> bool:
         """
@@ -128,56 +131,5 @@ class Hex(SimulatedWorld):
         # downright = self.__board[index + self.__size+1]
         downleft = self.__board[index + self.__size-1]"""
 
-    def __draw_board(self, action: Action) -> None:
-        Visualize.draw_board(self.__board_type, self.__board, action.positions)
-
-    def __make_move(self, action: Action, visualize: bool) -> None:
-        if self.__is_legal_action(action):
-            self.__board[action.start_coordinates] = 2
-            self.__board[action.adjacent_coordinates] = 2
-            self.__board[action.landing_coordinates] = 1
-
-            if visualize:
-                self.__draw_board(action)
-
-    def __pegs_remaining(self) -> int:
-        return (self.__board == 1).sum()
-
-    def __game_over(self) -> bool:
-        return len(self.get_all_legal_actions()) < 1
-
-    def __is_legal_action(self, action: Action) -> bool:
-        return self.__action_is_inside_board(action) \
-            and self.__cell_contains_peg(action.adjacent_coordinates) \
-            and not self.__cell_contains_peg(action.landing_coordinates)
-
-    def __cell_contains_peg(self, coordinates: Tuple[int, int]) -> bool:
-        return self.__board[coordinates] == 1
-
-    def __action_is_inside_board(self, action: Action) -> bool:
-        return (action.adjacent_coordinates[0] >= 0 and action.adjacent_coordinates[0] < self.__size) \
-            and (action.adjacent_coordinates[1] >= 0 and action.adjacent_coordinates[1] < self.__size) \
-            and (action.landing_coordinates[0] >= 0 and action.landing_coordinates[0] < self.__size) \
-            and (action.landing_coordinates[1] >= 0 and action.landing_coordinates[1] < self.__size) \
-            and self.__board[action.adjacent_coordinates] != 0 and self.__board[action.landing_coordinates] != 0
-
-    def __get_legal_actions_for_coordinates(self, coordinates: Tuple[int, int]) -> Tuple[Action]:
-        legal_actions: List[Action] = []
-        for direction_vector in self._edges:
-            action = Action(coordinates, direction_vector)
-            if self.__is_legal_action(action):
-                legal_actions.append(action)
-        return tuple(legal_actions)
-
-    def __get_all_legal_actions(self) -> Tuple[Action]:
-        legal_actions: List[Action] = []
-        for i in range(self.__board.shape[0]):
-            for j in range(self.__board.shape[0]):
-                if self.__cell_contains_peg((i, j)):
-                    legal_actions_for_position = self.__get_legal_actions_for_coordinates((i, j))
-                    if len(legal_actions_for_position) > 0:
-                        legal_actions += legal_actions_for_position
-        return tuple(legal_actions)
-
-    def __str__(self):
-        return str(self.__board)
+    def __draw_board(self, action: int) -> None:
+        Visualize.draw_board(self, self.__board, action)

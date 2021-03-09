@@ -1,8 +1,9 @@
+import math
 from typing import List, Optional, Tuple
 
 from src import parameters
 from world.simulated_world import SimulatedWorld
-import math
+
 
 class Ledge(SimulatedWorld):
 
@@ -30,15 +31,18 @@ class Ledge(SimulatedWorld):
             self.__board[coin_position] = 0
         return self.__get_state()
 
+    def get_legal_actions(self, state: Tuple[int, ...]) -> Tuple[int, ...]:
+        pass
+
     def generate_child_states(self) -> Tuple[Tuple[int, ...], ...]:
         possible_actions = self.__generate_possible_actions()
-        return tuple(self.__generate_state(action) for action in possible_actions)
+        return tuple(self.generate_state(action) for action in possible_actions)
 
     def __get_state(self) -> Tuple[int, ...]:
         return (self.__player_id, *self.__board)
 
-    def __generate_state(self, action: Tuple[int, int]) -> Tuple[int, ...]:
-        coin_position, landing_position = action
+    def generate_state(self, action: int) -> Tuple[int, ...]:
+        coin_position, landing_position = self.index_to_tuple(action)
         board = list(self.__board)
         if landing_position >= 0:
             board[landing_position], board[coin_position] = board[coin_position], 0
@@ -66,7 +70,7 @@ class Ledge(SimulatedWorld):
             return False
         return True
 
-    def __index_to_tuple(self, index: int) -> Tuple[int, int]:
+    def index_to_tuple(self, index: int) -> Tuple[int, int]:
         coin_position = math.ceil((math.sqrt(8 * index + 1) - 1) / 2)
         landing_position = index - int(coin_position * (coin_position - 1) / 2) - 1  # index % coin_position (also works, might be cheaper)
-        return(coin_position, landing_position)
+        return (coin_position, landing_position)

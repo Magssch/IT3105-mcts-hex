@@ -1,9 +1,11 @@
 import random
 
-from MCT import MCT
+import numpy as np
 
 import parameters
-from world import SimulatedWorld
+from ANET import ANET
+from MCTS import MCTS
+from world.simulated_world import SimulatedWorld
 
 
 class ReinforcementLearner:
@@ -23,7 +25,7 @@ class ReinforcementLearner:
 
     def __init__(self) -> None:
         self.__simulated_world = SimulatedWorld()  # (a) =B_a
-        self.__replay_buffer = []  # RBUF
+        self.__replay_buffer = np.array([])  # RBUF
         self.__ANET = ANET()
 
         self.__episodes = parameters.EPISODES
@@ -32,25 +34,28 @@ class ReinforcementLearner:
 
     def __run_one_episode(self,) -> None:
         root = self.__simulated_world.reset()  # (b)
-        monte_carlo_tree = MCT(root)  # (c)
+        monte_carlo_tree = MCTS(root)  # (c)
 
         while not self.__simulated_world.is_final_state():  # (d)
             B_mc = SimulatedWorld(root)  # (d.1)
 
             for search_game in range(self.__number_of_rollouts):  # (d.2) search_game brukes ikke til noe
-                leaf_node = monte_carlo_tree.tree_search(root)  # (d.3) tree_policy (UCB1 / UCT)
+                leaf_node = monte_carlo_tree.tree_search(monte_carlo_tree.root, B_mc)  # (d.3) tree_policy (UCB1 / UCT)
                 # TODO: Node expansion!
-                final_node = monte_carlo_tree.do_rollout(leaf_node, self.__ANET)  # (d.4)
-                monte_carlo_tree.do_backpropagation(final_node)  # (d.5)
+                reward = monte_carlo_tree.do_rollout(leaf_node, self.__ANET.choose_action, B_mc)  # (d.4)
+                monte_carlo_tree.do_backpropagation(leaf_node, reward)  # (d.5)
 
             D = monte_carlo_tree.get_normalized_distribution()  # (d.6) ??
-            self.__replay_buffer.append((root, D))  # (d.7)
-            action = self.__ANET.choose_action((root, D))  # (d.8) argmax based on softmax
-            next_state = self.__simulated_world.step(action)  # (d.9)
+            self.__replay_buffer.append(root + D)  # (d.7)
+            legal_actions = self.__simulated_world.get_legal_actions(root)
+            action = self.__ANET.choose_greedy(root, legal_actions)  # (d.8) argmax based on softmax
+            next_state, reward = self.__simulated_world.step(action)  # (d.9)
             monte_carlo_tree.set_root(next_state)
             root = next_state
 
-        self.__ANET.fit(random.choices(self.__replay_buffer, k=10))  # (e)
+        random_rows = random.sample(range(0, self.__replay_buffer.shape[0]), 10)
+        self.__ANET.fit(self.__replay_buffer[random_rows])  # (e)
+
 
         # (a)  Initialize the actual game board (B_a) to an empty board.
         # (b)  s_init = startingboardstate

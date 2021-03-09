@@ -1,13 +1,11 @@
 from math import log, sqrt
 from typing import Callable, Tuple
 
-import numpy as np
-
 from src import parameters
 from TreeNode import TreeNode
 from world.simulated_world import SimulatedWorld
 
-Policy = Callable[[Tuple[int, ...], Tuple[bool, ...]], int]  # s -> a
+Policy = Callable[[Tuple[int, ...], Tuple[int, ...]], int]  # s -> a
 
 
 class MCTS:
@@ -29,37 +27,42 @@ class MCTS:
                 distribution[action] = 0
         return tuple(distribution)
 
-    def tree_search(self, node: TreeNode, world: SimulatedWorld) -> TreeNode:
-        current_node = node
+    def tree_search(self, rootNode: TreeNode, world: SimulatedWorld) -> TreeNode:
+        current_node = rootNode
         while not current_node.is_leaf:
-            current_node = self.tree_policy(current_node)  # <- tree policy
+            action = self.tree_policy(current_node)
+            world.step(action)
+            current_node = current_node.children[action]
+
+        # Node expansion
+        if current_node.visits != 0:
+            for action in world.get_legal_actions(current_node.state):
+                current_node.add_node(action, world.generate_state(action))  # ??
+            current_node = list(current_node.children.values())[0]
+
         return current_node
 
-    def do_rollout(self, leafNode: TreeNode, default_policy: Policy, world: SimulatedWorld) -> TreeNode:
-        current_node = leafNode
-        while not current_node.is_terminal:
-            legal_moves = world.get_legal_actions(current_node.state)
-            action = default_policy(current_node.state, legal_moves)
-            next_state = world.step(action)
-            current_node = current_node.add_node(action, next_state)
-        return current_node
+    def do_rollout(self, leaf_node: TreeNode, default_policy: Policy, world: SimulatedWorld) -> int:
+        current_state = leaf_node.state
+        reward = 0
+        while not world.is_final_state():
+            legal_actions = world.get_legal_actions(current_state)
+            action = default_policy(current_state, legal_actions)
+            current_state, reward = world.step(action)
+        return reward
 
-    def do_backpropagation(self, terminalNode: TreeNode, score: int) -> None:
-        child = terminalNode
-        parent = child.parent
-        while parent is not None:
-            parent.score += child.score
-            parent.visits += 1
-            parent = parent.parent
+    def do_backpropagation(self, leaf_node: TreeNode, reward: int) -> None:
+        current_node = leaf_node
+        while current_node is not None:
+            current_node.score += reward
+            current_node.visits += 1
+            current_node = current_node.parent
 
-    def add_child_node(self, node: TreeNode) -> None:
-        pass
-
-    def tree_policy(self, node: TreeNode) -> TreeNode:
+    def tree_policy(self, node: TreeNode) -> int:
         """
-        Choses a child node based on the UCT score
+        Choses an action based on the UCT score of that corresponding node
         """
-        return max(node.children.values(), key=self.UCT)
+        return max(node.children.keys(), key=lambda key: self.UCT(node.children[key]))
 
     def UCT(self, node: TreeNode) -> float:
         return node.value + parameters.UCT_C * sqrt(2 * log(self.root.visits) / node.visits + 1)

@@ -1,5 +1,5 @@
 import random
-from typing import Any, Literal, Tuple, Union
+from typing import Tuple
 
 import numpy as np
 import tensorflow as tf
@@ -63,30 +63,21 @@ class ANET:
         model.summary()
         return model
 
-    def choose_action(self, state: Tuple[int, ...], valid_actions: Tuple[Union[0, 1], ...]) -> int:
+    def choose_action(self, state: Tuple[int, ...], valid_actions: Tuple[int, ...]) -> int:
         """Epsilon-greedy action selection function."""
         if random.random() < self.__epsilon:
             return self.choose_uniform(valid_actions)
         return self.choose_greedy(state, valid_actions)
 
-    def choose_uniform(self, valid_actions: Tuple[Union[[0], [1]], ...]) -> Any:
-        return random.choice(valid_actions)
+    def choose_uniform(self, valid_actions: Tuple[int, ...]) -> int:
+        return random.choice([i for i, _ in enumerate(valid_actions) if i == 1])
 
-    def choose_greedy(self, state: Tuple[int, ...], valid_actions: Tuple[Union[Literal[0], Literal[1]], ...]) -> int:
-        action_probabilities = self.__model(state).tolist()
-        for action in range(parameters.NUMBER_OF_ACTIONS):
-            if bool(possible_actions[action]):
-                action_probabilities[action] = 0
+    def choose_greedy(self, state: Tuple[int, ...], valid_actions: Tuple[int, ...]) -> int:
+        action_probabilities = self.__model(state)
+        action_probabilities = action_probabilities * np.array(valid_actions)
         action_probabilities = normalize(action_probabilities)
-        return np.argmax(action_probabilities)
+        return np.argmax(action_probabilities)[0]
 
-    def fit(self) -> None:
-        with tf.GradientTape(persistent=True) as tape:
-            target = reward + self._discount_factor * self.__values(tf.convert_to_tensor([successor_state]))  # type: ignore
-            prediction = self.__values(tf.convert_to_tensor([current_state]))
-            loss = self.__values.compiled_loss(target, prediction)
-            td_error = target - prediction
-
-        gradients = tape.gradient(loss, self.__values.trainable_weights)
-        gradients = self.__modify_gradients(gradients, td_error)
-        self.__values.optimizer.apply_gradients(zip(gradients, self.__values.trainable_weights))  # type: ignore
+    def fit(self, batch: np.ndarray) -> None:
+        X, Y = batch[:, :parameters.NUMBER_OF_STATES], batch[:, parameters.NUMBER_OF_STATES:]
+        self.__model.fit(X, Y)

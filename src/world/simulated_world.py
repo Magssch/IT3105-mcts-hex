@@ -9,11 +9,15 @@ class SimulatedWorld(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    def generate_state(self, action: int) -> Tuple[int, ...]:
+        raise NotImplementedError
+
+    @abstractmethod
     def generate_child_states(self, state: Tuple[int, ...]) -> Tuple[Tuple[int, ...]]:
         raise NotImplementedError
 
     @abstractmethod
-    def get_legal_actions(self, state: Tuple[int, ...]) -> Tuple[bool, ...]:
+    def get_legal_actions(self, state: Tuple[int, ...]) -> Tuple[int, ...]:
         raise NotImplementedError
 
     @abstractmethod
@@ -21,5 +25,5 @@ class SimulatedWorld(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def step(self, action: Tuple[int, ...]) -> Tuple[int, ...]:
+    def step(self, action: int) -> Tuple[Tuple[int, ...], int]:
         raise NotImplementedError
