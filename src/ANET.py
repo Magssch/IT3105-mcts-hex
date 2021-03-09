@@ -70,13 +70,13 @@ class ANET:
         return self.choose_greedy(state, valid_actions)
 
     def choose_uniform(self, valid_actions: Tuple[int, ...]) -> int:
-        return random.choice([i for i, _ in enumerate(valid_actions) if i == 1])
+        return random.choice([i for i, action in enumerate(valid_actions) if action == 1])
 
     def choose_greedy(self, state: Tuple[int, ...], valid_actions: Tuple[int, ...]) -> int:
-        action_probabilities = self.__model(tf.convert_to_tensor(state))
+        action_probabilities = self.__model(tf.convert_to_tensor([state]))
         action_probabilities = action_probabilities * np.array(valid_actions)
         action_probabilities = normalize(action_probabilities)
-        return np.argmax(action_probabilities)[0]
+        return np.argmax(action_probabilities)
 
     def fit(self, batch: np.ndarray) -> None:
         X, Y = batch[:, :parameters.NUMBER_OF_STATES], batch[:, parameters.NUMBER_OF_STATES:]

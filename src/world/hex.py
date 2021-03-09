@@ -38,13 +38,13 @@ class Hex(SimulatedWorld):
         }
 
         if state is None:
-            self.__player_id, *self.__board = self.reset()
+            self.reset()
         else:
-            self.__player_id, *self.__board = state
+            self.__player_id, self.__board = state[0], list(state[1:])
 
     def reset(self) -> Tuple[int, ...]:
         self.__player_id = 1
-        self.__board = tuple(0 for _ in range(self.__length))
+        self.__board = [0 for _ in range(self.__length)]
         return self.__get_state()
 
     def get_legal_actions(self) -> Tuple[int, ...]:
@@ -88,22 +88,22 @@ class Hex(SimulatedWorld):
                     visited_cells.add(current_cell)
         return False
 
-    def step(self, action: Tuple[int, int]) -> Tuple[int, ...]:
-        index = self.__coordinates_to_index(action)
-        assert 0 <= index < self.__size ** 2, 'Illegal action, index out of range'
-        assert self.__board[index] == 0, 'Illegal action, cell is occupied'
+    def step(self, action: int) -> Tuple[Tuple[int, ...], int]:
+        assert 0 <= action < self.__size ** 2, 'Illegal action, index out of range'
+        assert self.__board[action] == 0, 'Illegal action, cell is occupied'
 
-        self.__board = tuple(self.__board[:index] + (self.__player_id,) + self.__board[index:])
+        self.__board[action] = self.__player_id
         self.__modified_list[self.__player_id][self.__player_axis(action)] = True  # Used to speed up winning condition check
         self.__player_id = Hex.opposite_player[self.__player_id]
-        return self.__get_state()
+        return self.__get_state(), 0
 
     def __get_state(self) -> Tuple[int, ...]:
         return (self.__player_id, *self.__board)
 
-    def __player_axis(self, action: Tuple[int, int]) -> int:
-        row, column = action
-        return row * int(self.__player_id == 2) + column * int(self.__player_id == 1)
+    def __player_axis(self, action: int) -> int:
+        if (self.__player_id == 1):
+            return action % self.__size
+        return action // self.__size
 
     def __coordinates_to_index(self, coordinates: Tuple[int, int]) -> int:
         return (coordinates[0] * self.__size) + coordinates[1]

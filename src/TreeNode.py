@@ -25,7 +25,7 @@ class TreeNode:
 
     @property
     def value(self) -> float:
-        return self.score / self.visits
+        return self.score / self.visits if self.visits != 0 else 0
 
     def add_node(self, action: int, state: Tuple[int, ...]) -> TreeNode:
         child_node = TreeNode(state)
