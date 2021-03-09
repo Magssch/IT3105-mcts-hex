@@ -62,4 +62,4 @@ class MCTS:
         return max(node.children.values(), key=self.UCT)
 
     def UCT(self, node: TreeNode) -> float:
-        return node.value + parameters.UCT_C * sqrt(2 * log(self.root.visit_count) / node.visit_count + 1)
+        return node.value + parameters.UCT_C * sqrt(2 * log(self.root.visits) / node.visits + 1)
