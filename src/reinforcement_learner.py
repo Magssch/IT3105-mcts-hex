@@ -5,7 +5,7 @@ import numpy as np
 import parameters
 from ANET import ANET
 from MCTS import MCTS
-from world.simulated_world import SimulatedWorld
+from world.simulated_world_factory import SimulatedWorldFactory
 
 
 class ReinforcementLearner:
@@ -24,7 +24,7 @@ class ReinforcementLearner:
     """
 
     def __init__(self) -> None:
-        self.__simulated_world = SimulatedWorld()  # (a) =B_a
+        self.__actual_game = SimulatedWorldFactory.get_simulated_world()  # (a) =B_a
         self.__replay_buffer = np.array([])  # RBUF
         self.__ANET = ANET()
 
@@ -33,26 +33,30 @@ class ReinforcementLearner:
         self.__caching_interval = parameters.ANET_CACHING_INTERVAL
 
     def __run_one_episode(self,) -> None:
-        root = self.__simulated_world.reset()  # (b)
-        monte_carlo_tree = MCTS(root)  # (c)
+        initial_game_state = self.__actual_game.reset()  # (b)
+        monte_carlo_tree = MCTS(initial_game_state)  # (c)
+        root_state = initial_game_state
 
-        while not self.__simulated_world.is_final_state():  # (d)
-            B_mc = SimulatedWorld(root)  # (d.1)
+        while not self.__actual_game.is_final_state():  # (d)
+            # monte_carlo_board = B_mc
+            monte_carlo_game = SimulatedWorldFactory.get_simulated_world(root_state)  # (d.1)
 
             for search_game in range(self.__number_of_rollouts):  # (d.2) search_game brukes ikke til noe
-                leaf_node = monte_carlo_tree.tree_search(monte_carlo_tree.root, B_mc)  # (d.3) tree_policy (UCB1 / UCT)
-                # TODO: Node expansion!
-                reward = monte_carlo_tree.do_rollout(leaf_node, self.__ANET.choose_action, B_mc)  # (d.4)
+                leaf_node = monte_carlo_tree.tree_search(monte_carlo_tree.root, monte_carlo_game)  # (d.3) tree_policy (UCB1 / UCT)
+                reward = monte_carlo_tree.do_rollout(leaf_node, self.__ANET.choose_action, monte_carlo_game)  # (d.4)
                 monte_carlo_tree.do_backpropagation(leaf_node, reward)  # (d.5)
 
-            D = monte_carlo_tree.get_normalized_distribution()  # (d.6) ??
-            self.__replay_buffer.append(root + D)  # (d.7)
-            legal_actions = self.__simulated_world.get_legal_actions(root)
-            action = self.__ANET.choose_greedy(root, legal_actions)  # (d.8) argmax based on softmax
-            next_state, reward = self.__simulated_world.step(action)  # (d.9)
-            monte_carlo_tree.set_root(next_state)
-            root = next_state
+            target_distribution = monte_carlo_tree.get_normalized_distribution()  # (d.6) ??
+            self.__replay_buffer.append(root_state + target_distribution)  # (d.7)
 
+            legal_actions = self.__actual_game.get_legal_actions(root_state)
+            action = self.__ANET.choose_greedy(root_state, legal_actions)  # (d.8) argmax based on softmax
+            next_state, reward = self.__actual_game.step(action)  # (d.9)
+
+            monte_carlo_tree.update_root(action)
+            root_state = next_state
+
+        # Train ANET on a random minibatch of cases from RBUF
         random_rows = random.sample(range(0, self.__replay_buffer.shape[0]), 10)
         self.__ANET.fit(self.__replay_buffer[random_rows])  # (e)
 
@@ -75,7 +79,7 @@ class ReinforcementLearner:
         #         In MCT, retain subtree rooted at s*; discard everything else.
         #         root = s*
         # (e)  Train ANET on a random minibatch of cases from RBUF
-        pass
+
 
     def run(self) -> None:
         """

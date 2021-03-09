@@ -14,9 +14,9 @@ class MCTS:
         self.root = TreeNode(initial_state)
         self.action_space = parameters.NUMBER_OF_ACTIONS
 
-    def set_root(self, node: TreeNode) -> None:
-        node.parent = None
-        self.root = node
+    def update_root(self, action: int) -> None:
+        self.root.parent = None
+        self.root = self.root.children[action]
 
     def get_normalized_distribution(self) -> Tuple[float, ...]:
         distribution = []

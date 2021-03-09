@@ -24,7 +24,7 @@ class Hex(SimulatedWorld):
         2: 1,
     }
 
-    def __init__(self, state: Optional[Tuple[int, ...]]):
+    def __init__(self, state: Optional[Tuple[int, ...]] = None):
         self.__size: int = parameters.SIZE
         self.__length = self.__size ** 2
 
