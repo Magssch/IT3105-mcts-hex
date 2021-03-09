@@ -1,6 +1,6 @@
 import math
 
-from BasicClientActorAbs import BasicClientActorAbs
+from .BasicClientActorAbs import BasicClientActorAbs
 
 
 class BasicClientActor(BasicClientActorAbs):

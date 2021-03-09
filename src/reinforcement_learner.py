@@ -28,7 +28,7 @@ class ReinforcementLearner:
 
         self.__episodes = parameters.EPISODES
         self.__number_of_rollouts = parameters.NUMBER_OF_ROLLOUTS
-        self.__caching_interval = parameters.ACTOR_CACHING_INTERVAL
+        self.__caching_interval = parameters.ANET_CACHING_INTERVAL
 
     def __run_one_episode(self,) -> None:
         root = self.__simulated_world.reset()  # (b)

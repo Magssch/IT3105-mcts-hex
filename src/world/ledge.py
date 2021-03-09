@@ -2,7 +2,7 @@ from typing import List, Optional, Tuple
 
 from src import parameters
 from world.simulated_world import SimulatedWorld
-
+import math
 
 class Ledge(SimulatedWorld):
 
@@ -65,3 +65,8 @@ class Ledge(SimulatedWorld):
         if sum(board[landing_position:coin_position]) > 0:
             return False
         return True
+
+    def __index_to_tuple(self, index: int) -> Tuple[int, int]:
+        coin_position = math.ceil((math.sqrt(8 * index + 1) - 1) / 2)
+        landing_position = index - int(coin_position * (coin_position - 1) / 2) - 1  # index % coin_position (also works, might be cheaper)
+        return(coin_position, landing_position)

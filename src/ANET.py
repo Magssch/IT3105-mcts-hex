@@ -1,5 +1,5 @@
 import random
-from typing import Any, Tuple
+from typing import Any, Literal, Tuple, Union
 
 import numpy as np
 import tensorflow as tf
@@ -63,16 +63,16 @@ class ANET:
         model.summary()
         return model
 
-    def choose_action(self, state: Tuple[int, ...], possible_actions: Tuple[Any, ...]) -> int:
+    def choose_action(self, state: Tuple[int, ...], valid_actions: Tuple[Union[0, 1], ...]) -> int:
         """Epsilon-greedy action selection function."""
         if random.random() < self.__epsilon:
-            return self.choose_uniform(possible_actions)
-        return self.choose_greedy(state, possible_actions)
+            return self.choose_uniform(valid_actions)
+        return self.choose_greedy(state, valid_actions)
 
-    def choose_uniform(self, possible_actions: Tuple[Any, ...]) -> Any:
-        return random.choice(possible_actions)
+    def choose_uniform(self, valid_actions: Tuple[Union[[0], [1]], ...]) -> Any:
+        return random.choice(valid_actions)
 
-    def choose_greedy(self, state: Tuple[int, ...], possible_actions: Tuple[Any, ...]) -> int:
+    def choose_greedy(self, state: Tuple[int, ...], valid_actions: Tuple[Union[Literal[0], Literal[1]], ...]) -> int:
         action_probabilities = self.__model(state).tolist()
         for action in range(parameters.NUMBER_OF_ACTIONS):
             if bool(possible_actions[action]):

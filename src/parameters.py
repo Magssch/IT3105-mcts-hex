@@ -12,7 +12,7 @@ UCT_C = 1  # "Often 1"
 SIZE = 5  # 3 <= k <= 10
 GAME_TYPE = Game.Ledge
 NUMBER_OF_STATES = SIZE ** 2
-NUMBER_OF_ACTIONS = SIZE ** 2
+NUMBER_OF_ACTIONS = SIZE ** 2 if GAME_TYPE == Game.Hex else int((SIZE ** 2 - SIZE) / 2) + 1
 VISUALIZE_GAMES = True
 FRAME_DELAY = 0.15
 LEDGE_BOARD = (0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 2, 0, 0, 1, 1, 1)  # (0,2,0,1,0,1,1,1,0,0,0,0,1,0,1,0,1)
