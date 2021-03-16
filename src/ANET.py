@@ -80,5 +80,5 @@ class ANET:
         return np.argmax(action_probabilities)
 
     def fit(self, batch: np.ndarray) -> None:
-        X, Y = batch[:, :parameters.NUMBER_OF_STATES], batch[:, parameters.NUMBER_OF_STATES:]
+        X, Y = batch[:, :parameters.STATE_SIZE], batch[:, parameters.STATE_SIZE:]
         self.__model.fit(X, Y)

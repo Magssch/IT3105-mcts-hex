@@ -37,6 +37,7 @@ class Hex(SimulatedWorld):
         self.reset(state)
 
     def reset(self, state: Optional[Tuple[int, ...]] = None) -> Tuple[int, ...]:
+        self.__is_final_state = False
         self.__modified_list = {
             1: [False for _ in range(self.__size)],
             2: [False for _ in range(self.__size)]
@@ -66,13 +67,18 @@ class Hex(SimulatedWorld):
         return (Hex.opposite_player[self.__player_id], *next_board)
 
     def is_final_state(self) -> bool:
+        return self.__is_final_state
+
+    def __update_final_state(self) -> None:
         """
         Checks whether the opposite player has won the game.
         """
+
         opposite_player = Hex.opposite_player[self.__player_id]
 
         if sum(self.__modified_list[opposite_player]) < self.__size:  # Does the player have the sufficient amount of pegs along its axis?
-            return False
+            self.__is_final_state = False
+            return
 
         # Sufficient amount of pegs, check for path using BFS
         visited_cells = set()
@@ -90,9 +96,11 @@ class Hex(SimulatedWorld):
                         if neighbour not in visited_cells and neighbour not in queue:
                             queue.append(neighbour)
                             if neighbour in self.__ending_indices[opposite_player]:
-                                return True
+                                self.__is_final_state = True
+                                return
                     visited_cells.add(current_cell)
-        return False
+        self.__is_final_state = False
+        return
 
     def step(self, action: int) -> Tuple[Tuple[int, ...], int]:
         assert 0 <= action < self.__size ** 2, 'Illegal action, index out of range'
@@ -101,7 +109,14 @@ class Hex(SimulatedWorld):
         self.__board[action] = self.__player_id
         self.__modified_list[self.__player_id][self.__player_axis(self.__player_id, action)] = True  # Used to speed up winning condition check
         self.__player_id = Hex.opposite_player[self.__player_id]
-        return self.__get_state(), 0
+        self.__update_final_state()
+        return self.__get_state(), self.get_winner_id()
+
+    def get_winner_id(self) -> int:
+        if self.__is_final_state:
+            return Hex.opposite_player[self.__player_id]
+        else:
+            return 0
 
     def __get_state(self) -> Tuple[int, ...]:
         return (self.__player_id, *self.__board)

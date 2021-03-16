@@ -27,6 +27,21 @@ class TreeNode:
     def value(self) -> float:
         return self.score / self.visits if self.visits != 0 else 0
 
+    def set_terminal(self):
+        self.__is_terminal = True
+
+    def get_parent(self) -> Optional[TreeNode]:
+        return self.parent
+
+    def add_reward(self, winner: int) -> None:
+        if self.state[0] == winner:
+            self.score += 1
+        else:
+            self.score -= 1
+
+    def increment_visit_count(self) -> None:
+        self.visits += 1
+
     def add_node(self, action: int, state: Tuple[int, ...]) -> TreeNode:
         child_node = TreeNode(state)
         self.children[action] = child_node

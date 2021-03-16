@@ -9,6 +9,7 @@ class Visualize:
 
     __graph = nx.Graph()
     __frame_delay = parameters.FRAME_DELAY
+    __board_size = parameters.SIZE
 
     @staticmethod
     def __add_node_to_graph(graph, position):
@@ -20,48 +21,44 @@ class Visualize:
 
     @staticmethod
     def __get_filled_nodes(board):
-        filled_positions = []
-        for i in range(board.shape[0]):
-            for j in range(board.shape[0]):
-                if board[i][j] == 1:
-                    filled_positions.append((i, j))
-        return filled_positions
+        filled_player_1 = []
+        filled_player_2 = []
+        for i in range(Visualize.__board_size):
+            for j in range(Visualize.__board_size):
+                if board[(i // Visualize.__board_size) + (j % Visualize.__board_size)] == 1:
+                    filled_player_1.append((i, j))
+                if board[(i // Visualize.__board_size) + (j % Visualize.__board_size)] == 2:
+                    filled_player_2.append((i, j))
+        return filled_player_1, filled_player_2
 
     @staticmethod
     def __get_empty_nodes(board):
         empty_positions = []
-        for i in range(board.shape[0]):
-            for j in range(board.shape[0]):
-                if board[i][j] == 2:
+        for i in range(Visualize.__board_size):
+            for j in range(Visualize.__board_size):
+                if board[(i // Visualize.__board_size) + (j % Visualize.__board_size)] == 0:
                     empty_positions.append((i, j))
         return empty_positions
 
     @staticmethod
     def __get_legal_positions(board):
         legal_positions = []
-        for i in range(board.shape[0]):
-            for j in range(board.shape[0]):
-                if bool(board[i][j]):
+        for i in range(Visualize.__board_size):
+            for j in range(Visualize.__board_size):
+                if bool((i // Visualize.__board_size) + (j % Visualize.__board_size)):
                     legal_positions.append((i, j))
         return legal_positions
 
     @classmethod
     def initialize_board(cls, board, edges, board_type):
-        size = board.shape[0]
+        size = Visualize.__board_size
 
         legal_positions = Visualize.__get_legal_positions(board)
 
-        # Creates a Hex Diamon grid
-        if board_type == Shape.Diamond:
-            for i in range(size):
-                for j in range(size):
-                    Visualize.__add_node_to_graph(Visualize.__graph, (i, j))
+        for i in range(size):
+            for j in range(size):
+                Visualize.__add_node_to_graph(Visualize.__graph, (i, j))
 
-        # Create a Hex Triangle grid
-        elif board_type == Shape.Triangle:
-            for i in range(size):
-                for j in range(i + 1):
-                    Visualize.__add_node_to_graph(Visualize.__graph, (i, j))
 
         for x, y in legal_positions:
             for row_offset, column_offset in edges:
@@ -71,50 +68,28 @@ class Visualize:
                         Visualize.__graph, (x, y), neighbor_node)
 
     @staticmethod
-    def draw_board(board_type, board, action_nodes, positions=None):
+    def draw_board( board, positions=None):
 
         # List of all node positions currently filled
-        filled_nodes = Visualize.__get_filled_nodes(board)
+        filled_player_1, filled_player_2 = Visualize.__get_filled_nodes(board)
         empty_nodes = Visualize.__get_empty_nodes(board)
         legal_positions = Visualize.__get_legal_positions(board)
-        size = board.shape[0]
+        size = Visualize.__board_size
         positions = {}
 
-
-        # Position nodes to shape a Triangle
-        if board_type == Shape.Triangle:
-            for node in legal_positions:
-                positions[node] = (2 * node[1] - node[0], size - node[0])
-
         # Position nodes to shape a Diamond
-        elif board_type == Shape.Diamond:
-            for node in legal_positions:
-                positions[node] = (node[0] - node[1], 2*size - node[1] - node[0])
+        for node in legal_positions:
+            positions[node] = (node[0] - node[1], 2*size - node[1] - node[0])
 
-        # Remove nodes currently active
-        for nodes in action_nodes:
-            if nodes in filled_nodes:
-                filled_nodes.remove(nodes)
-
-        # Draw first move
-        Visualize.plot_graph(Visualize.__graph, positions, empty_nodes, filled_nodes, action_nodes, action_colors=['green','black','white'])
-        Visualize.plot_graph(Visualize.__graph, positions, empty_nodes, filled_nodes, action_nodes, action_colors=['green','red','white'])
-        Visualize.plot_graph(Visualize.__graph, positions, empty_nodes, filled_nodes, action_nodes, action_colors=['white','red','green'])
-        Visualize.plot_graph(Visualize.__graph, positions, empty_nodes, filled_nodes, action_nodes, action_colors=['white' , 'white','green'])
-
-    @staticmethod
-    def plot_graph(graph, positions, empty_nodes, filled_nodes, action_nodes, action_colors):
-        nx.draw_networkx_nodes(graph, pos=positions, nodelist=empty_nodes, node_color='white')
-        nx.draw_networkx_nodes(graph, pos=positions, nodelist=filled_nodes, node_color='black')
-        nx.draw_networkx_nodes(graph, pos=positions, nodelist=[action_nodes[0]], node_color=action_colors[0])
-        nx.draw_networkx_nodes(graph, pos=positions, nodelist=[action_nodes[1]], node_color=action_colors[1])
-        nx.draw_networkx_nodes(graph, pos=positions, nodelist=[action_nodes[2]], node_color=action_colors[2])
-        nx.draw_networkx_edges(graph, pos=positions, alpha=0.5, width=1, edge_color='grey')
+        nx.draw_networkx_nodes(graph, pos=positions, nodelist=empty_notes, node_color='white')
+        nx.draw_networkx_nodes(graph, pos=positions, nodelist=filled_player_1, node_color='black')
+        nx.draw_networkx_nodes(graph, pos=positions, nodelist=filled_player_2, node_color='red')
 
         plt.axis('off')
         plt.draw()
         plt.pause(Visualize.__frame_delay)
         plt.clf()
+
 
     @staticmethod
     def plot_training_data(training_data):

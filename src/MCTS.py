@@ -31,8 +31,13 @@ class MCTS:
         current_node = rootNode
         while not current_node.is_leaf:
             action = self.tree_policy(current_node)
-            world.step(action)
+            _, winner = world.step(action)
             current_node = current_node.children[action]
+
+        # Node is terminal state
+        if world.is_final_state():
+            current_node.set_terminal()
+            return current_node
 
         # Node expansion
         if current_node.visits != 0:
@@ -40,23 +45,25 @@ class MCTS:
                 if bool(legal):
                     current_node.add_node(action, world.generate_state(action))
             current_node = list(current_node.children.values())[0]
-
         return current_node
 
     def do_rollout(self, leaf_node: TreeNode, default_policy: Policy, world: SimulatedWorld) -> int:
+        if leaf_node.is_terminal:
+            return world.get_winner_id()
+
+        winner = -1
         current_state = leaf_node.state
-        reward = 0
         while not world.is_final_state():
             legal_actions = world.get_legal_actions()
             action = default_policy(current_state, legal_actions)
-            current_state, reward = world.step(action)
-        return reward
+            current_state, winner = world.step(action)
+        return winner
 
-    def do_backpropagation(self, leaf_node: TreeNode, reward: int) -> None:
+    def do_backpropagation(self, leaf_node: TreeNode, winner: int) -> None:
         current_node = leaf_node
         while current_node is not None:
-            current_node.score += reward
-            current_node.visits += 1
+            current_node.add_reward(winner)
+            current_node.increment_visit_count()
             current_node = current_node.parent
 
     def tree_policy(self, node: TreeNode) -> int:

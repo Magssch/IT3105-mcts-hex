@@ -11,7 +11,7 @@ UCT_C = 1  # "Often 1"
 # Simulated World
 SIZE = 5  # 3 <= k <= 10
 GAME_TYPE = Game.Hex
-NUMBER_OF_STATES = SIZE ** 2
+STATE_SIZE = 1 + (SIZE ** 2 if GAME_TYPE == Game.Hex else SIZE)
 NUMBER_OF_ACTIONS = SIZE ** 2 if GAME_TYPE == Game.Hex else int((SIZE ** 2 - SIZE) / 2) + 1
 VISUALIZE_GAMES = True
 FRAME_DELAY = 0.15
@@ -23,7 +23,7 @@ ANET_LEARNING_RATE = 0.001
 ANET_ACTIVATION_FUNCTION = relu  # linear, relu, sigmoid, or tanh
 ANET_OPTIMIZER = Adam  # SGD, Adagrad, Adam, or RMSprop
 ANET_CACHING_INTERVAL = 5
-ANET_DIMENSIONS = (NUMBER_OF_STATES + 1, 10, 30, 5, NUMBER_OF_ACTIONS)
+ANET_DIMENSIONS = (STATE_SIZE, 10, 30, 5, NUMBER_OF_ACTIONS)
 
 # TOPP parameters
 NUMBER_OF_GAMES = 4
