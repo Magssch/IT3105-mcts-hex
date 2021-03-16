@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import Tuple
+from typing import Optional, Tuple
 
 
 class SimulatedWorld(ABC):
 
     @abstractmethod
-    def reset(self) -> Tuple[int, ...]:
+    def reset(self, state: Optional[Tuple[int, ...]] = None) -> Tuple[int, ...]:
         raise NotImplementedError
 
     @abstractmethod

@@ -11,6 +11,6 @@ class SimulatedWorldFactory:
     @staticmethod
     def get_simulated_world(state: Optional[Tuple[int, ...]] = None) -> SimulatedWorld:
         if parameters.GAME_TYPE == Game.Ledge:
-            return Ledge()
+            return Ledge(state)
         else:
-            return Hex()
+            return Hex(state)

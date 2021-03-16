@@ -70,10 +70,11 @@ class ANET:
         return self.choose_greedy(state, valid_actions)
 
     def choose_uniform(self, valid_actions: Tuple[int, ...]) -> int:
+        assert sum(valid_actions) > 0, 'Illegal argument, valid actions cannot be empty'
         return random.choice([i for i, action in enumerate(valid_actions) if action == 1])
 
     def choose_greedy(self, state: Tuple[int, ...], valid_actions: Tuple[int, ...]) -> int:
-        action_probabilities = self.__model(tf.convert_to_tensor([state]))
+        action_probabilities = self.__model(tf.convert_to_tensor([state])).numpy()
         action_probabilities = action_probabilities * np.array(valid_actions)
         action_probabilities = normalize(action_probabilities)
         return np.argmax(action_probabilities)

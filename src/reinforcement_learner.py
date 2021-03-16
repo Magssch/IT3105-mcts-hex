@@ -42,9 +42,11 @@ class ReinforcementLearner:
             monte_carlo_game = SimulatedWorldFactory.get_simulated_world(root_state)  # (d.1)
 
             for search_game in range(self.__number_of_rollouts):  # (d.2) search_game brukes ikke til noe
+                print("Search game", search_game)
                 leaf_node = monte_carlo_tree.tree_search(monte_carlo_tree.root, monte_carlo_game)  # (d.3) tree_policy (UCB1 / UCT)
                 reward = monte_carlo_tree.do_rollout(leaf_node, self.__ANET.choose_action, monte_carlo_game)  # (d.4)
                 monte_carlo_tree.do_backpropagation(leaf_node, reward)  # (d.5)
+                monte_carlo_game.reset(root_state)
 
             target_distribution = monte_carlo_tree.get_normalized_distribution()  # (d.6) ??
             self.__replay_buffer.append(root_state + target_distribution)  # (d.7)

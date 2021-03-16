@@ -36,8 +36,9 @@ class MCTS:
 
         # Node expansion
         if current_node.visits != 0:
-            for action in world.get_legal_actions():
-                current_node.add_node(action, world.generate_state(action))  # ??
+            for action, legal in enumerate(world.get_legal_actions()):
+                if bool(legal):
+                    current_node.add_node(action, world.generate_state(action))
             current_node = list(current_node.children.values())[0]
 
         return current_node

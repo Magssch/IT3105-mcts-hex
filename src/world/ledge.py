@@ -15,9 +15,12 @@ class Ledge(SimulatedWorld):
         else:
             self.__player_id, *self.__board = list(state)
 
-    def reset(self) -> Tuple[int, ...]:
-        self.__player_id = 1
-        self.__board = list(parameters.LEDGE_BOARD)
+    def reset(self, state: Optional[Tuple[int, ...]] = None) -> Tuple[int, ...]:
+        if state is None:
+            self.__player_id = 1
+            self.__board = list(parameters.LEDGE_BOARD)
+        else:
+            self.__player_id, *self.__board = list(state)
         return self.__get_state()
 
     def is_final_state(self) -> bool:
