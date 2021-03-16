@@ -25,7 +25,7 @@ class ReinforcementLearner:
 
     def __init__(self) -> None:
         self.__actual_game = SimulatedWorldFactory.get_simulated_world()  # (a) =B_a
-        self.__replay_buffer = np.array([])  # RBUF
+        self.__replay_buffer = np.empty((0, 1 + parameters.NUMBER_OF_STATES + parameters.NUMBER_OF_ACTIONS))  # RBUF
         self.__ANET = ANET()
 
         self.__episodes = parameters.EPISODES
@@ -48,10 +48,12 @@ class ReinforcementLearner:
                 monte_carlo_tree.do_backpropagation(leaf_node, reward)  # (d.5)
                 monte_carlo_game.reset(root_state)
 
+            print(self.__replay_buffer)
             target_distribution = monte_carlo_tree.get_normalized_distribution()  # (d.6) ??
-            self.__replay_buffer.append(root_state + target_distribution)  # (d.7)
+            self.__replay_buffer = np.append(self.__replay_buffer, np.array([root_state + target_distribution]), axis=0)  # (d.7)
+            print(self.__replay_buffer)
 
-            legal_actions = self.__actual_game.get_legal_actions(root_state)
+            legal_actions = self.__actual_game.get_legal_actions()
             action = self.__ANET.choose_greedy(root_state, legal_actions)  # (d.8) argmax based on softmax
             next_state, reward = self.__actual_game.step(action)  # (d.9)
 

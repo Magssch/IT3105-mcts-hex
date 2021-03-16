@@ -22,9 +22,9 @@ class MCTS:
         distribution = []
         for action in range(self.action_space):
             if action in self.root.children:
-                distribution[action] = self.root.children[action].visits / self.root.visits
+                distribution.append(self.root.children[action].visits / self.root.visits)
             else:
-                distribution[action] = 0
+                distribution.append(0)
         return tuple(distribution)
 
     def tree_search(self, rootNode: TreeNode, world: SimulatedWorld) -> TreeNode:
