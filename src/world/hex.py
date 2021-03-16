@@ -92,10 +92,10 @@ class Hex(SimulatedWorld):
                 queue.append(index)
                 while len(queue) > 0:
                     current_cell = queue.popleft()
-                    for neighbour in self.__get_filled_neighbours(current_cell, opposite_player):
-                        if neighbour not in visited_cells and neighbour not in queue:
-                            queue.append(neighbour)
-                            if neighbour in self.__ending_indices[opposite_player]:
+                    for neighbor in self.__get_filled_neighbors(current_cell, opposite_player):
+                        if neighbor not in visited_cells and neighbor not in queue:
+                            queue.append(neighbor)
+                            if neighbor in self.__ending_indices[opposite_player]:
                                 self.__is_final_state = True
                                 return
                     visited_cells.add(current_cell)
@@ -129,8 +129,8 @@ class Hex(SimulatedWorld):
     def __coordinates_to_index(self, coordinates: Tuple[int, int]) -> int:
         return (coordinates[0] * self.__size) + coordinates[1]
 
-    def __get_filled_neighbours(self, index: int, player_id: int) -> Set[int]:
-        def is_cell_neighbour(cell: int) -> bool:
+    def __get_filled_neighbors(self, index: int, player_id: int) -> Set[int]:
+        def is_cell_neighbor(cell: int) -> bool:
             if not (0 <= cell < self.__length):
                 return False
             if abs((cell % self.__size) - (index % self.__size)) > 1:
@@ -139,9 +139,9 @@ class Hex(SimulatedWorld):
                 return False
             return True
 
-        return set(filter(is_cell_neighbour, self.__get_neighbouring_indices(index)))
+        return set(filter(is_cell_neighbor, self.__get_neighboring_indices(index)))
 
-    def __get_neighbouring_indices(self, index: int) -> Set[int]:
+    def __get_neighboring_indices(self, index: int) -> Set[int]:
         return {
             index - self.__size,
             index + self.__size,
@@ -150,7 +150,3 @@ class Hex(SimulatedWorld):
             index - self.__size + 1,
             index + self.__size - 1
         }
-
-    def __draw_board(self, action: int) -> None:
-        pass
-        # Visualize.draw_board(self, self.__board, action)

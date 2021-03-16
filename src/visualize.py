@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import networkx as nx
-from data_classes import Shape
 
 import parameters
 
@@ -23,42 +22,38 @@ class Visualize:
     def __get_filled_nodes(board):
         filled_player_1 = []
         filled_player_2 = []
-        for i in range(Visualize.__board_size):
-            for j in range(Visualize.__board_size):
-                if board[(i // Visualize.__board_size) + (j % Visualize.__board_size)] == 1:
-                    filled_player_1.append((i, j))
-                if board[(i // Visualize.__board_size) + (j % Visualize.__board_size)] == 2:
-                    filled_player_2.append((i, j))
+        for index in range(Visualize.__board_size ** 2):
+            if board[index] == 1:
+                filled_player_1.append((index // Visualize.__board_size, index % Visualize.__board_size))
+            if board[index] == 2:
+                filled_player_2.append((index // Visualize.__board_size, index % Visualize.__board_size))
         return filled_player_1, filled_player_2
 
     @staticmethod
     def __get_empty_nodes(board):
         empty_positions = []
-        for i in range(Visualize.__board_size):
-            for j in range(Visualize.__board_size):
-                if board[(i // Visualize.__board_size) + (j % Visualize.__board_size)] == 0:
-                    empty_positions.append((i, j))
+        for index in range(Visualize.__board_size):
+            if board[index] == 0:
+                empty_positions.append((index // Visualize.__board_size, index % Visualize.__board_size))
         return empty_positions
 
     @staticmethod
     def __get_legal_positions(board):
         legal_positions = []
-        for i in range(Visualize.__board_size):
-            for j in range(Visualize.__board_size):
-                if bool((i // Visualize.__board_size) + (j % Visualize.__board_size)):
-                    legal_positions.append((i, j))
+        for index in range(Visualize.__board_size ** 2):
+            legal_positions.append((index // Visualize.__board_size, index % Visualize.__board_size))
         return legal_positions
 
     @classmethod
-    def initialize_board(cls, board, edges, board_type):
+    def initialize_board(cls, state):
+        board = state[1:]
         size = Visualize.__board_size
-
         legal_positions = Visualize.__get_legal_positions(board)
+        edges = set([(0, -1), (1, -1), (1, 0), (0, 1), (-1, 1), (-1, 0)])
 
         for i in range(size):
             for j in range(size):
                 Visualize.__add_node_to_graph(Visualize.__graph, (i, j))
-
 
         for x, y in legal_positions:
             for row_offset, column_offset in edges:
@@ -68,7 +63,8 @@ class Visualize:
                         Visualize.__graph, (x, y), neighbor_node)
 
     @staticmethod
-    def draw_board( board, positions=None):
+    def draw_board(state, positions=None):
+        board = state[1:]
 
         # List of all node positions currently filled
         filled_player_1, filled_player_2 = Visualize.__get_filled_nodes(board)
@@ -79,63 +75,17 @@ class Visualize:
 
         # Position nodes to shape a Diamond
         for node in legal_positions:
-            positions[node] = (node[0] - node[1], 2*size - node[1] - node[0])
-
-        nx.draw_networkx_nodes(graph, pos=positions, nodelist=empty_notes, node_color='white')
-        nx.draw_networkx_nodes(graph, pos=positions, nodelist=filled_player_1, node_color='black')
-        nx.draw_networkx_nodes(graph, pos=positions, nodelist=filled_player_2, node_color='red')
+            positions[node] = (node[0] - node[1], 2 * size - node[1] - node[0])
+        print(len(filled_player_1), filled_player_1)
+        print(len(filled_player_2), filled_player_2)
+        print(len(empty_nodes), empty_nodes)
+        print(len(legal_positions), legal_positions)
+        nx.draw_networkx_nodes(Visualize.__graph, pos=positions, nodelist=empty_nodes, node_color='white')
+        nx.draw_networkx_nodes(Visualize.__graph, pos=positions, nodelist=filled_player_1, node_color='black')
+        nx.draw_networkx_nodes(Visualize.__graph, pos=positions, nodelist=filled_player_2, node_color='red')
+        nx.draw_networkx_edges(Visualize.__graph, pos=positions, alpha=0.5, width=1, edge_color='grey')
 
         plt.axis('off')
         plt.draw()
         plt.pause(Visualize.__frame_delay)
         plt.clf()
-
-
-    @staticmethod
-    def plot_training_data(training_data):
-        plt.title('Training data')
-        plt.xlabel('Episode')
-        plt.ylabel('Remaining Pegs')
-        plt.plot(training_data, color='tab:blue')
-
-        plt.savefig(f'src/results/training_data.png')
-        plt.close()
-
-    @staticmethod
-    def plot_epsilon(epsilon_history):
-        plt.title('Epsilon')
-        plt.xlabel('Time step')
-        plt.ylabel('$\epsilon$')
-
-        x = [i for i in range(len(epsilon_history))]
-        explore_history = [y for y in epsilon_history if y > 0.5]
-        exploit_history = [y for y in epsilon_history if y <= 0.5]
-
-        plt.plot(x[:len(explore_history)], explore_history, label='Explorative', color='tab:cyan')
-        plt.plot(x[len(explore_history):], exploit_history, label='Exploitative', color='tab:blue')
-
-        plt.legend()
-        plt.savefig('src/results/epsilon.png')
-        plt.close()
-
-    @staticmethod
-    def plot_td_error(td_error_history):
-        plt.title('TD error')
-        plt.xlabel('Time step')
-        plt.ylabel('$\delta$')
-
-        plt.plot(td_error_history, color='tab:blue')
-
-        plt.savefig('src/results/td_error.png')
-        plt.close()
-
-    @staticmethod
-    def plot_value_history(value_history):
-        plt.title('Max value')
-        plt.xlabel('Episode')
-        plt.ylabel('$\max_s V(s)$')
-
-        plt.plot(value_history, color='tab:blue')
-
-        plt.savefig('src/results/value_history.png')
-        plt.close()

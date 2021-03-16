@@ -1,4 +1,5 @@
 import random
+from visualize import Visualize
 
 import numpy as np
 
@@ -78,3 +79,15 @@ class ReinforcementLearner:
 
         if parameters.VISUALIZE_GAMES:
             print('Showing one episode with the greedy strategy.')
+            world = SimulatedWorldFactory.get_simulated_world()
+            current_state = world.reset()
+            Visualize.initialize_board(current_state)
+
+            while not world.is_final_state():
+                legal_actions = world.get_legal_actions()
+                action = self.__ANET.choose_action(current_state, legal_actions)
+                current_state, winner = world.step(action)
+                print()
+                print(current_state)
+                Visualize.draw_board(current_state)
+                print()
