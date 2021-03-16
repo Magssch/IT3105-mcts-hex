@@ -24,30 +24,31 @@ class Hex(SimulatedWorld):
         2: 1,
     }
 
+    def __str__(self) -> str:
+        return str(self.__get_state())
+
     def __init__(self, state: Optional[Tuple[int, ...]] = None):
         self.__size: int = parameters.SIZE
         self.__length = self.__size ** 2
-
-        self.__modified_list = {
-            1: [False for _ in range(self.__size)],
-            2: [False for _ in range(self.__size)]
-        }
         self.__ending_indices = {
             1: set([self.__length - (i + 1) for i in range(self.__size)]),
             2: set([self.__size * (i + 1) - 1 for i in range(self.__size)]),
         }
-
-        if state is None:
-            self.reset()
-        else:
-            self.__player_id, self.__board = state[0], list(state[1:])
+        self.reset(state)
 
     def reset(self, state: Optional[Tuple[int, ...]] = None) -> Tuple[int, ...]:
+        self.__modified_list = {
+            1: [False for _ in range(self.__size)],
+            2: [False for _ in range(self.__size)]
+        }
         if state is None:
             self.__player_id = 1
             self.__board = [0 for _ in range(self.__length)]
         else:
             self.__player_id, self.__board = state[0], list(state[1:])
+            for action, player_id in enumerate(self.__board):
+                if player_id != 0:
+                    self.__modified_list[player_id][self.__player_axis(player_id, action)] = True
         return self.__get_state()
 
     def get_legal_actions(self) -> Tuple[int, ...]:
@@ -69,6 +70,7 @@ class Hex(SimulatedWorld):
         Checks whether the opposite player has won the game.
         """
         opposite_player = Hex.opposite_player[self.__player_id]
+
         if sum(self.__modified_list[opposite_player]) < self.__size:  # Does the player have the sufficient amount of pegs along its axis?
             return False
 
@@ -97,17 +99,17 @@ class Hex(SimulatedWorld):
         assert self.__board[action] == 0, 'Illegal action, cell is occupied'
 
         self.__board[action] = self.__player_id
-        self.__modified_list[self.__player_id][self.__player_axis(action)] = True  # Used to speed up winning condition check
+        self.__modified_list[self.__player_id][self.__player_axis(self.__player_id, action)] = True  # Used to speed up winning condition check
         self.__player_id = Hex.opposite_player[self.__player_id]
         return self.__get_state(), 0
 
     def __get_state(self) -> Tuple[int, ...]:
         return (self.__player_id, *self.__board)
 
-    def __player_axis(self, action: int) -> int:
-        if (self.__player_id == 1):
-            return action % self.__size
-        return action // self.__size
+    def __player_axis(self, player_id: int, action: int) -> int:
+        if player_id == 1:
+            return action // self.__size
+        return action % self.__size
 
     def __coordinates_to_index(self, coordinates: Tuple[int, int]) -> int:
         return (coordinates[0] * self.__size) + coordinates[1]

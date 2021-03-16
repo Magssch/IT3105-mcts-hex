@@ -38,3 +38,6 @@ class TreeNode:
 
     def __hash__(self) -> int:
         return hash(self.state)
+
+    def __str__(self) -> str:
+        return f'TreeNode(s={self.score}, v={self.visits}): {self.state}'

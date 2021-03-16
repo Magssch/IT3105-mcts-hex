@@ -48,10 +48,8 @@ class ReinforcementLearner:
                 monte_carlo_tree.do_backpropagation(leaf_node, reward)  # (d.5)
                 monte_carlo_game.reset(root_state)
 
-            print(self.__replay_buffer)
             target_distribution = monte_carlo_tree.get_normalized_distribution()  # (d.6) ??
             self.__replay_buffer = np.append(self.__replay_buffer, np.array([root_state + target_distribution]), axis=0)  # (d.7)
-            print(self.__replay_buffer)
 
             legal_actions = self.__actual_game.get_legal_actions()
             action = self.__ANET.choose_greedy(root_state, legal_actions)  # (d.8) argmax based on softmax
