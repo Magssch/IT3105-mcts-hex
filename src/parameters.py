@@ -14,7 +14,7 @@ GAME_TYPE = Game.Hex
 STATE_SIZE = 1 + (SIZE ** 2 if GAME_TYPE == Game.Hex else SIZE)
 NUMBER_OF_ACTIONS = SIZE ** 2 if GAME_TYPE == Game.Hex else int((SIZE ** 2 - SIZE) / 2) + 1
 VISUALIZE_GAMES = True
-FRAME_DELAY = 0.15
+FRAME_DELAY = 0.4
 LEDGE_BOARD = (0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 2, 0, 0, 1, 1, 1)  # (0,2,0,1,0,1,1,1,0,0,0,0,1,0,1,0,1)
 
 # ANET

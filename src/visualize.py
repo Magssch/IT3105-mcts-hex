@@ -32,7 +32,7 @@ class Visualize:
     @staticmethod
     def __get_empty_nodes(board):
         empty_positions = []
-        for index in range(Visualize.__board_size):
+        for index in range(Visualize.__board_size ** 2):
             if board[index] == 0:
                 empty_positions.append((index // Visualize.__board_size, index % Visualize.__board_size))
         return empty_positions
