@@ -97,3 +97,20 @@ class Visualize:
         plt.legend()
         plt.savefig('src/plots/loss.png')
         plt.close()
+
+    @staticmethod
+    def plot_epsilon(epsilon_history):
+        plt.title('Epsilon')
+        plt.xlabel('Time step')
+        plt.ylabel('$\epsilon$')
+
+        x = [i for i in range(len(epsilon_history))]
+        explore_history = [y for y in epsilon_history if y > 0.5]
+        exploit_history = [y for y in epsilon_history if y <= 0.5]
+
+        plt.plot(x[:len(explore_history)], explore_history, label='Explorative', color='tab:cyan')
+        plt.plot(x[len(explore_history):], exploit_history, label='Exploitative', color='tab:blue')
+
+        plt.legend()
+        plt.savefig('src/plots/epsilon.png')
+        plt.close()

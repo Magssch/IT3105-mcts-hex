@@ -36,8 +36,6 @@ class TreeNode:
     def add_reward(self, winner: int) -> None:
         if self.state[0] == winner:
             self.score += 1
-        else:
-            self.score -= 1
 
     def increment_visit_count(self) -> None:
         self.visits += 1

@@ -39,14 +39,19 @@ class ANET:
 
     def __init__(self, model_name: Optional[str] = None) -> None:
         self.__epsilon = parameters.ANET_EPSILON
+        self.__epsilon_decay_rate = parameters.ANET_EPSILON_DECAY
+
         self.__learning_rate = parameters.ANET_LEARNING_RATE
         self.__activation_function = parameters.ANET_ACTIVATION_FUNCTION
         self.__optimizer = parameters.ANET_OPTIMIZER
-        self.__loss_history = []
+
         if model_name is None:
             self.__model = self.__build_model()
         else:
            self.load(model_name)
+
+        self.__loss_history = []
+        self.__epsilon_history = []
 
     def __build_model(self) -> Sequential:
         """Builds a neural network model with the provided dimensions and learning rate"""
@@ -75,8 +80,8 @@ class ANET:
         self.__name = 'Agent-e' + model_name.replace('.h5', '')
         self.__model = tf.keras.models.load_model(f'src/models/{model_name}')
 
-    def set_epsilon(self):
-        self.__epsilon = 0
+    def set_epsilon(self, epsilon: float):
+        self.__epsilon = epsilon
 
     def choose_action(self, state: Tuple[int, ...], valid_actions: Tuple[int, ...]) -> int:
         """Epsilon-greedy action selection function."""
@@ -98,10 +103,16 @@ class ANET:
         X, Y = batch[:, :parameters.STATE_SIZE], batch[:, parameters.STATE_SIZE:]
         history = self.__model.fit(X, Y)
         self.__loss_history.append(history.history["loss"][0])
+        self.__epsilon_history.append(self.__epsilon)
+        self.__epsilon *= self.__epsilon_decay_rate  # decay epislon
 
     @property
     def get_loss_history(self):
         return self.__loss_history
+
+    @property
+    def get_epsilon_history(self):
+        return self.__epsilon_history
 
     def __str__(self) -> str:
         return self.__name
