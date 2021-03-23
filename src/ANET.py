@@ -62,7 +62,7 @@ class ANET:
         model.add(Dense(output_dim, activation=softmax))
 
         model.compile(
-            optimizer=self.__optimizer(learning_rate=self.__learning_rate),
+            optimizer=(self.__optimizer(learning_rate=self.__learning_rate) if self.__learning_rate is not None else self.__optimizer()),
             loss=categorical_crossentropy
         )
         model.summary()

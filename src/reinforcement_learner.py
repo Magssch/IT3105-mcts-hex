@@ -31,7 +31,7 @@ class ReinforcementLearner:
 
         self.__episodes = parameters.EPISODES
         self.__number_of_rollouts = parameters.NUMBER_OF_ROLLOUTS
-        self.__caching_interval = parameters.ANET_CACHING_INTERVAL
+        self.__caching_interval = self.__episodes // (parameters.ANETS_TO_BE_CACHED - 1)
         self.__batch_size = parameters.ANET_BATCH_SIZE
 
     def __run_one_episode(self,) -> None:
@@ -67,15 +67,13 @@ class ReinforcementLearner:
         Runs all episodes with pivotal parameters.
         Visualizes one round at the end.
         """
-        # i_s = self.__caching_interval  # save interval for ANET (the actor network) parameters
-        # Clear Replay Buffer (RBUF)
-        # Randomly initialize parameters (weights and biases) of ANET
+        self.__ANET.save(str(0) + ".h5") # Save the untrained ANET before episode 1
         for episode in range(1, self.__episodes + 1):
             print('Episode:', episode)
             self.__run_one_episode()
 
             if episode % self.__caching_interval == 0:
-                # Save ANET’s current parameters for later use in tournament play.
+                # Save ANET for later use in tournament play.
                 self.__ANET.save(str(episode) + ".h5")
 
         Visualize.plot_loss(self.__ANET.get_loss_history)
@@ -85,7 +83,7 @@ class ReinforcementLearner:
             ReinforcementLearner.run_one_game(self.__ANET, self.__ANET, True)
 
     @staticmethod
-    def run_one_game(player_1: ANET, player_2: ANET, visualize=False):
+    def run_one_game(player_1: ANET, player_2: ANET, visualize=False) -> int:
         player_1.set_epsilon()
         player_2.set_epsilon()
         world = SimulatedWorldFactory.get_simulated_world()
@@ -108,3 +106,4 @@ class ReinforcementLearner:
                 Visualize.draw_board(current_state)
 
         print(f'Player {winner} has won the game.')
+        return winner
