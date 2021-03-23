@@ -1,7 +1,9 @@
+import glob
+import os
+
 from reinforcement_learner import ReinforcementLearner
 from TOPP import TOPP
-import os
-import glob
+
 
 def clear_models():
     files = glob.glob('src/models/*')

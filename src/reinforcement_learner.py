@@ -59,15 +59,20 @@ class ReinforcementLearner:
             root_state = next_state
 
         # Train ANET on a random minibatch of cases from RBUF
-        random_rows = random.sample(range(0, self.__replay_buffer.shape[0]), self.__batch_size)
+        random_rows = self.__sample_replay_buffer()
         self.__ANET.fit(self.__replay_buffer[random_rows])
+
+    def __sample_replay_buffer(self):
+        number_of_rows = self.__replay_buffer.shape[0]
+        batch_size = min(number_of_rows, self.__batch_size)
+        return random.sample(range(0, number_of_rows), batch_size)
 
     def run(self) -> None:
         """
         Runs all episodes with pivotal parameters.
         Visualizes one round at the end.
         """
-        self.__ANET.save(str(0) + ".h5") # Save the untrained ANET before episode 1
+        self.__ANET.save(str(0) + ".h5")  # Save the untrained ANET before episode 1
         for episode in range(1, self.__episodes + 1):
             print('\nEpisode:', episode)
             self.__run_one_episode()
@@ -76,8 +81,8 @@ class ReinforcementLearner:
                 # Save ANET for later use in tournament play.
                 self.__ANET.save(str(episode) + ".h5")
 
-        Visualize.plot_loss(self.__ANET.get_loss_history)
-        Visualize.plot_epsilon(self.__ANET.get_epsilon_history)
+        Visualize.plot_loss(self.__ANET.loss_history)
+        Visualize.plot_epsilon(self.__ANET.epsilon_history)
 
         if parameters.VISUALIZE_GAMES:
             print('Showing one episode with the greedy strategy.')
@@ -85,8 +90,8 @@ class ReinforcementLearner:
 
     @staticmethod
     def run_one_game(player_1: ANET, player_2: ANET, visualize=False) -> int:
-        player_1.set_epsilon(1.0)
-        player_2.set_epsilon(1.0)
+        player_1.set_epsilon(0.0)
+        player_2.set_epsilon(0.0)
         world = SimulatedWorldFactory.get_simulated_world()
         current_state = world.reset()
 
@@ -104,7 +109,7 @@ class ReinforcementLearner:
             current_state, winner = world.step(action)
 
             if visualize:
-                Visualize.draw_board(current_state)
+                Visualize.draw_board(current_state, winner)
 
         print(f'Player {winner} has won the game.')
         return winner

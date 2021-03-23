@@ -9,7 +9,7 @@ class TreeNode:
         self.state = state
         self.__is_terminal: bool = False
 
-        self.score = 0
+        self.wins = 0
         self.visits = 0
 
         self.parent = parent
@@ -25,7 +25,7 @@ class TreeNode:
 
     @property
     def value(self) -> float:
-        return self.score / self.visits if self.visits != 0 else 0
+        return self.wins / self.visits if self.visits != 0 else 0
 
     def set_terminal(self):
         self.__is_terminal = True
@@ -35,7 +35,7 @@ class TreeNode:
 
     def add_reward(self, winner: int) -> None:
         if self.state[0] == winner:
-            self.score += 1
+            self.wins += 1
 
     def increment_visit_count(self) -> None:
         self.visits += 1
@@ -53,4 +53,4 @@ class TreeNode:
         return hash(self.state)
 
     def __str__(self) -> str:
-        return f'TreeNode(s={self.score}, v={self.visits}): {self.state}'
+        return f'TreeNode(s={self.wins}, v={self.visits}): {self.state}'

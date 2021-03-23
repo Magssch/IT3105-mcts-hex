@@ -101,17 +101,17 @@ class ANET:
 
     def fit(self, batch: np.ndarray) -> None:
         X, Y = batch[:, :parameters.STATE_SIZE], batch[:, parameters.STATE_SIZE:]
-        history = self.__model.fit(X, Y)
+        history = self.__model.fit(X, Y, batch_size=parameters.ANET_BATCH_SIZE)
         self.__loss_history.append(history.history["loss"][0])
         self.__epsilon_history.append(self.__epsilon)
         self.__epsilon *= self.__epsilon_decay_rate  # decay epislon
 
     @property
-    def get_loss_history(self):
+    def loss_history(self):
         return self.__loss_history
 
     @property
-    def get_epsilon_history(self):
+    def epsilon_history(self):
         return self.__epsilon_history
 
     def __str__(self) -> str:
