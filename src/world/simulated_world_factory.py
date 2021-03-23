@@ -1,9 +1,11 @@
 from typing import Optional, Tuple
-from .simulated_world import SimulatedWorld
-from .ledge import Ledge
-from .hex import Hex
+
 import parameters
 from game import Game
+
+from .hex import Hex
+from .ledge import Ledge
+from .simulated_world import SimulatedWorld
 
 
 class SimulatedWorldFactory:

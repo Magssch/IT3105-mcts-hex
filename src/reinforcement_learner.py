@@ -1,11 +1,11 @@
 import random
-from visualize import Visualize
 
 import numpy as np
 
 import parameters
 from ANET import ANET
 from MCTS import MCTS
+from visualize import Visualize
 from world.simulated_world_factory import SimulatedWorldFactory
 
 
