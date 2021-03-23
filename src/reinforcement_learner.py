@@ -75,16 +75,31 @@ class ReinforcementLearner:
 
             if episode % self.__caching_interval == 0:
                 # Save ANET’s current parameters for later use in tournament play.
-                self.__ANET.save(f'src/models/{episode}.h5')
+                self.__ANET.save(str(episode) + ".h5")
 
         if parameters.VISUALIZE_GAMES:
             print('Showing one episode with the greedy strategy.')
-            world = SimulatedWorldFactory.get_simulated_world()
-            current_state = world.reset()
+            ReinforcementLearner.run_one_game(self.__ANET, self.__ANET, True)
+
+    @staticmethod
+    def run_one_game(player_1: ANET, player_2: ANET, visualize=False):
+        world = SimulatedWorldFactory.get_simulated_world()
+        current_state = world.reset()
+
+        if visualize:
             Visualize.initialize_board(current_state)
 
-            while not world.is_final_state():
-                legal_actions = world.get_legal_actions()
-                action = self.__ANET.choose_action(current_state, legal_actions)
-                current_state, winner = world.step(action)
+        winner = 0
+        while not world.is_final_state():
+            player_id = current_state[0]
+            legal_actions = world.get_legal_actions()
+
+            player = player_1 if player_id == 1 else player_2
+            action = player.choose_action(current_state, legal_actions)
+
+            current_state, winner = world.step(action)
+
+            if visualize:
                 Visualize.draw_board(current_state)
+
+        print(f'Player {winner} has won the game.')

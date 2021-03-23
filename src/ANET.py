@@ -1,5 +1,5 @@
 import random
-from typing import Tuple
+from typing import Optional, Tuple
 
 import numpy as np
 import tensorflow as tf
@@ -37,15 +37,19 @@ class ANET:
         Replaces trace e(state) with 1.0
     """
 
-    def __init__(self) -> None:
+    def __init__(self, model_name: Optional[str] = None) -> None:
         self.__epsilon = parameters.ANET_EPSILON
         self.__learning_rate = parameters.ANET_LEARNING_RATE
         self.__activation_function = parameters.ANET_ACTIVATION_FUNCTION
         self.__optimizer = parameters.ANET_OPTIMIZER
-        self.__model = self.__build_model()
+        if model_name is None:
+            self.__model = self.__build_model()
+        else:
+           self.load(model_name)
 
     def __build_model(self) -> Sequential:
         """Builds a neural network model with the provided dimensions and learning rate"""
+        self.__name = 'Reidar'
         input_dim, *hidden_dims, output_dim = parameters.ANET_DIMENSIONS
 
         model = Sequential()
@@ -63,8 +67,12 @@ class ANET:
         model.summary()
         return model
 
-    def save(self, path: str) -> None:
-        self.__model.save(path)
+    def save(self, model_name: str) -> None:
+        self.__model.save(f'src/models/{model_name}')
+
+    def load(self, model_name: str) -> None:
+        self.__name = 'Agent-e' + model_name.replace('.h5', '')
+        self.__model = tf.keras.models.load_model(f'src/models/{model_name}')
 
     def choose_action(self, state: Tuple[int, ...], valid_actions: Tuple[int, ...]) -> int:
         """Epsilon-greedy action selection function."""
@@ -85,3 +93,9 @@ class ANET:
     def fit(self, batch: np.ndarray) -> None:
         X, Y = batch[:, :parameters.STATE_SIZE], batch[:, parameters.STATE_SIZE:]
         self.__model.fit(X, Y)
+
+    def __str__(self) -> str:
+        return self.__name
+
+    def __repr__(self) -> str:
+        return self.__name
