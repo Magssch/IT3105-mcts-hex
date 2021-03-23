@@ -20,13 +20,12 @@ class TOPP:
     def get_agents(self):
         _, _, models = next(walk('src/models'))
         agents = []
-        for model in models:
+        for model in sorted(models, key=lambda name: int(name.split(".")[0])):
             agent = ANET(model)
             agents.append(agent)
         return agents
 
-    def play(self):
-
+    def run(self):
         for i in range(self.number_of_agents - 1):
             player_1 = self.agents[i]
             for j in range(i + 1, self.number_of_agents):

@@ -42,6 +42,7 @@ class ANET:
         self.__learning_rate = parameters.ANET_LEARNING_RATE
         self.__activation_function = parameters.ANET_ACTIVATION_FUNCTION
         self.__optimizer = parameters.ANET_OPTIMIZER
+        self.__loss_history = []
         if model_name is None:
             self.__model = self.__build_model()
         else:
@@ -74,6 +75,9 @@ class ANET:
         self.__name = 'Agent-e' + model_name.replace('.h5', '')
         self.__model = tf.keras.models.load_model(f'src/models/{model_name}')
 
+    def set_epsilon(self):
+        self.__epsilon = 0
+
     def choose_action(self, state: Tuple[int, ...], valid_actions: Tuple[int, ...]) -> int:
         """Epsilon-greedy action selection function."""
         if random.random() < self.__epsilon:
@@ -92,7 +96,12 @@ class ANET:
 
     def fit(self, batch: np.ndarray) -> None:
         X, Y = batch[:, :parameters.STATE_SIZE], batch[:, parameters.STATE_SIZE:]
-        self.__model.fit(X, Y)
+        history = self.__model.fit(X, Y)
+        self.__loss_history.append(history.history["loss"][0])
+
+    @property
+    def get_loss_history(self):
+        return self.__loss_history
 
     def __str__(self) -> str:
         return self.__name

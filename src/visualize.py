@@ -1,3 +1,4 @@
+from typing import List
 import matplotlib.pyplot as plt
 import networkx as nx
 
@@ -86,3 +87,13 @@ class Visualize:
         plt.draw()
         plt.pause(Visualize.__frame_delay)
         plt.clf()
+
+    @staticmethod
+    def plot_loss(loss_history: List[int]):
+        plt.title('Training loss')
+        plt.ylabel('Loss')
+        plt.xlabel('Episode')
+        plt.plot(loss_history, label="(training) loss")
+        plt.legend()
+        plt.savefig('src/plots/loss.png')
+        plt.close()

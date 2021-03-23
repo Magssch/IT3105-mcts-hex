@@ -32,6 +32,7 @@ class ReinforcementLearner:
         self.__episodes = parameters.EPISODES
         self.__number_of_rollouts = parameters.NUMBER_OF_ROLLOUTS
         self.__caching_interval = parameters.ANET_CACHING_INTERVAL
+        self.__batch_size = parameters.ANET_BATCH_SIZE
 
     def __run_one_episode(self,) -> None:
         initial_game_state = self.__actual_game.reset()
@@ -58,7 +59,7 @@ class ReinforcementLearner:
             root_state = next_state
 
         # Train ANET on a random minibatch of cases from RBUF
-        random_rows = random.sample(range(0, self.__replay_buffer.shape[0]), 10)
+        random_rows = random.sample(range(0, self.__replay_buffer.shape[0]), self.__batch_size)
         self.__ANET.fit(self.__replay_buffer[random_rows])
 
     def run(self) -> None:
@@ -69,13 +70,15 @@ class ReinforcementLearner:
         # i_s = self.__caching_interval  # save interval for ANET (the actor network) parameters
         # Clear Replay Buffer (RBUF)
         # Randomly initialize parameters (weights and biases) of ANET
-        for episode in range(self.__episodes):
-            print('Episode:', episode + 1)
+        for episode in range(1, self.__episodes + 1):
+            print('Episode:', episode)
             self.__run_one_episode()
 
             if episode % self.__caching_interval == 0:
                 # Save ANET’s current parameters for later use in tournament play.
                 self.__ANET.save(str(episode) + ".h5")
+
+        Visualize.plot_loss(self.__ANET.get_loss_history)
 
         if parameters.VISUALIZE_GAMES:
             print('Showing one episode with the greedy strategy.')
@@ -83,6 +86,8 @@ class ReinforcementLearner:
 
     @staticmethod
     def run_one_game(player_1: ANET, player_2: ANET, visualize=False):
+        player_1.set_epsilon()
+        player_2.set_epsilon()
         world = SimulatedWorldFactory.get_simulated_world()
         current_state = world.reset()
 
