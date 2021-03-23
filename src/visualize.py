@@ -76,10 +76,7 @@ class Visualize:
         # Position nodes to shape a Diamond
         for node in legal_positions:
             positions[node] = (node[0] - node[1], 2 * size - node[1] - node[0])
-        print(len(filled_player_1), filled_player_1)
-        print(len(filled_player_2), filled_player_2)
-        print(len(empty_nodes), empty_nodes)
-        print(len(legal_positions), legal_positions)
+
         nx.draw_networkx_nodes(Visualize.__graph, pos=positions, nodelist=empty_nodes, node_color='white')
         nx.draw_networkx_nodes(Visualize.__graph, pos=positions, nodelist=filled_player_1, node_color='black')
         nx.draw_networkx_nodes(Visualize.__graph, pos=positions, nodelist=filled_player_2, node_color='red')

@@ -63,6 +63,9 @@ class ANET:
         model.summary()
         return model
 
+    def save(self, path: str) -> None:
+        self.__model.save(path)
+
     def choose_action(self, state: Tuple[int, ...], valid_actions: Tuple[int, ...]) -> int:
         """Epsilon-greedy action selection function."""
         if random.random() < self.__epsilon:

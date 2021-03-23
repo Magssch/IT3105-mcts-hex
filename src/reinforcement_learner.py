@@ -52,7 +52,7 @@ class ReinforcementLearner:
 
             legal_actions = self.__actual_game.get_legal_actions()
             action = self.__ANET.choose_greedy(root_state, legal_actions)
-            next_state, reward = self.__actual_game.step(action)
+            next_state, _ = self.__actual_game.step(action)
 
             monte_carlo_tree.update_root(action)
             root_state = next_state
@@ -75,7 +75,7 @@ class ReinforcementLearner:
 
             if episode % self.__caching_interval == 0:
                 # Save ANET’s current parameters for later use in tournament play.
-                pass
+                self.__ANET.save(f'src/models/{episode}.h5')
 
         if parameters.VISUALIZE_GAMES:
             print('Showing one episode with the greedy strategy.')
@@ -87,7 +87,4 @@ class ReinforcementLearner:
                 legal_actions = world.get_legal_actions()
                 action = self.__ANET.choose_action(current_state, legal_actions)
                 current_state, winner = world.step(action)
-                print()
-                print(current_state)
                 Visualize.draw_board(current_state)
-                print()
