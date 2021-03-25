@@ -6,7 +6,7 @@ import tensorflow as tf
 from keras import backend as K  # noqa
 from keras.activations import softmax
 from keras.layers import Dense, Input
-from keras.losses import categorical_crossentropy
+from keras.losses import kl_divergence
 from keras.models import Sequential
 from keras.utils import normalize
 
@@ -68,7 +68,7 @@ class ANET:
 
         model.compile(
             optimizer=(self.__optimizer(learning_rate=self.__learning_rate) if self.__learning_rate is not None else self.__optimizer()),
-            loss=categorical_crossentropy
+            loss=kl_divergence
         )
         model.summary()
         return model
