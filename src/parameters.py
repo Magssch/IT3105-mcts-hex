@@ -4,9 +4,9 @@ from keras.optimizers import SGD, Adagrad, Adam, RMSprop  # noqa
 from game import Game
 
 # MCTS parameters
-EPISODES = 50
-NUMBER_OF_ROLLOUTS = 100 # M
-UCT_C = 1  # "Often 1"
+EPISODES = 200
+NUMBER_OF_ROLLOUTS = 50 # M
+UCT_C = 1.25  # "Often 1"
 
 # Simulated World
 SIZE = 3  # 3 <= k <= 10

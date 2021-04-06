@@ -6,7 +6,7 @@ from TOPP import TOPP
 
 
 def clear_models():
-    files = glob.glob('src/models/*')
+    files = glob.glob('models/*')
     for f in files:
         os.remove(f)
 

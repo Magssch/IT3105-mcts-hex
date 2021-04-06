@@ -120,7 +120,7 @@ class Visualize:
         plt.xlabel('Episode')
         plt.plot(loss_history, label="(training) loss")
         plt.legend()
-        plt.savefig('src/plots/loss.png')
+        plt.savefig('plots/loss.png')
         plt.close()
 
     @staticmethod
@@ -137,5 +137,5 @@ class Visualize:
         plt.plot(x[len(explore_history):], exploit_history, label='Exploitative', color='tab:blue')
 
         plt.legend()
-        plt.savefig('src/plots/epsilon.png')
+        plt.savefig('plots/epsilon.png')
         plt.close()

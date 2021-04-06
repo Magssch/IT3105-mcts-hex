@@ -74,7 +74,7 @@ class ANET:
         return model
 
     def save(self, model_name: str) -> None:
-        self.__model.save(f'src/models/{model_name}')
+        self.__model.save(f'models/{model_name}')
 
     def load(self, model_name: str) -> None:
         self.__name = 'Agent-e' + model_name.replace('.h5', '')
