@@ -146,7 +146,7 @@ class Visualize:
         plt.title('TOPP results')
         plt.xlabel('Agent')
         plt.xticks(rotation=45)
-        plt.ylabel('$wins$')
+        plt.ylabel('wins')
 
         plt.bar(list(map(str, agents)), win_statistics)
 

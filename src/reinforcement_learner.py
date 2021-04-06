@@ -1,4 +1,5 @@
 import random
+from time import time
 
 import numpy as np
 
@@ -30,7 +31,7 @@ class ReinforcementLearner:
         self.__ANET = ANET()
 
         self.__episodes = parameters.EPISODES
-        self.__number_of_rollouts = parameters.NUMBER_OF_ROLLOUTS
+        self.__simulation_time_out = parameters.SIMULATION_TIME_OUT
         self.__caching_interval = self.__episodes // (parameters.ANETS_TO_BE_CACHED - 1)
         self.__batch_size = parameters.ANET_BATCH_SIZE
         self.__replay_buffer_size = parameters.REPLAY_BUFFER_SIZE
@@ -44,7 +45,8 @@ class ReinforcementLearner:
         while not self.__actual_game.is_final_state():
             monte_carlo_game = SimulatedWorldFactory.get_simulated_world(root_state)
 
-            for _ in range(self.__number_of_rollouts):
+            start_time = time()
+            while time() - start_time < self.__simulation_time_out:
                 leaf_node = monte_carlo_tree.tree_search(monte_carlo_tree.root, monte_carlo_game)
                 winner = monte_carlo_tree.do_rollout(leaf_node, self.__ANET.choose_action, monte_carlo_game)
                 monte_carlo_tree.do_backpropagation(leaf_node, winner)
