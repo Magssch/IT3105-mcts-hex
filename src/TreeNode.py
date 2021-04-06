@@ -1,19 +1,32 @@
 from __future__ import annotations
 
-from typing import Dict, Optional, Tuple
+from typing import Dict, Literal, Optional, Tuple
 
 
 class TreeNode:
+
+    player_reward = {
+        1: 1,
+        2: -1
+    }
 
     def __init__(self, state: Tuple[int, ...], parent: Optional[TreeNode] = None) -> None:
         self.state = state
         self.__is_terminal: bool = False
 
-        self.wins = 0
-        self.visits = 0
+        self.score = 0
+        self.__visits = 0
 
         self.parent = parent
         self.children: Dict[int, TreeNode] = {}
+
+    @property
+    def visits(self) -> int:
+        return self.__visits
+
+    @property
+    def player_id(self) -> int:
+        return self.state[0]
 
     @property
     def is_leaf(self) -> bool:
@@ -25,7 +38,7 @@ class TreeNode:
 
     @property
     def value(self) -> float:
-        return self.wins / self.visits if self.visits != 0 else 0
+        return self.score / self.visits if self.visits != 0 else 0
 
     def set_terminal(self):
         self.__is_terminal = True
@@ -34,11 +47,10 @@ class TreeNode:
         return self.parent
 
     def add_reward(self, winner: int) -> None:
-        if self.state[0] == winner:
-            self.wins += 1
+        self.score += TreeNode.player_reward[winner]
 
     def increment_visit_count(self) -> None:
-        self.visits += 1
+        self.__visits += 1
 
     def add_node(self, action: int, state: Tuple[int, ...]) -> TreeNode:
         child_node = TreeNode(state)
@@ -53,4 +65,4 @@ class TreeNode:
         return hash(self.state)
 
     def __str__(self) -> str:
-        return f'TreeNode(s={self.wins}, v={self.visits}): {self.state}'
+        return f'TreeNode(s={self.score}, v={self.visits}): {self.state}'

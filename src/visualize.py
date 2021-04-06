@@ -1,3 +1,4 @@
+from os import walk
 from typing import List
 
 import matplotlib.pyplot as plt
@@ -138,4 +139,17 @@ class Visualize:
 
         plt.legend()
         plt.savefig('plots/epsilon.png')
+        plt.close()
+
+    @staticmethod
+    def plot_win_statistics(agents, win_statistics):
+        plt.title('TOPP results')
+        plt.xlabel('Agent')
+        plt.xticks(rotation=45)
+        plt.ylabel('$wins$')
+
+        plt.bar(list(map(str, agents)), win_statistics)
+
+        plt.tight_layout()
+        plt.savefig('plots/TOPP_results.png')
         plt.close()

@@ -33,6 +33,8 @@ class ReinforcementLearner:
         self.__number_of_rollouts = parameters.NUMBER_OF_ROLLOUTS
         self.__caching_interval = self.__episodes // (parameters.ANETS_TO_BE_CACHED - 1)
         self.__batch_size = parameters.ANET_BATCH_SIZE
+        self.__replay_buffer_size = parameters.REPLAY_BUFFER_SIZE
+        self.__buffer_insertion_index = 0
 
     def __run_one_episode(self,) -> None:
         initial_game_state = self.__actual_game.reset()
@@ -49,7 +51,11 @@ class ReinforcementLearner:
                 monte_carlo_game.reset(root_state)
 
             target_distribution = monte_carlo_tree.get_normalized_distribution()
-            self.__replay_buffer = np.append(self.__replay_buffer, np.array([root_state + target_distribution]), axis=0)
+            if self.__buffer_insertion_index < self.__replay_buffer_size:
+                self.__replay_buffer = np.append(self.__replay_buffer, np.array([root_state + target_distribution]), axis=0)
+            else:
+                i = self.__buffer_insertion_index % self.__replay_buffer_size
+                self.__replay_buffer[i] = np.array([root_state + target_distribution])
 
             legal_actions = self.__actual_game.get_legal_actions()
             action = self.__ANET.choose_greedy(root_state, legal_actions)

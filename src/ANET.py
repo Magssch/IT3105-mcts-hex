@@ -46,7 +46,7 @@ class ANET:
         self.__optimizer = parameters.ANET_OPTIMIZER
 
         if model_name is None:
-            self.__model = self.__build_model()
+            self.__model: Sequential = self.__build_model()
         else:
            self.load(model_name)
 
@@ -102,8 +102,11 @@ class ANET:
     def fit(self, batch: np.ndarray) -> None:
         X, Y = batch[:, :parameters.STATE_SIZE], batch[:, parameters.STATE_SIZE:]
         history = self.__model.fit(X, Y, batch_size=parameters.ANET_BATCH_SIZE)
+
+        # Used for visualization
         self.__loss_history.append(history.history["loss"][0])
         self.__epsilon_history.append(self.__epsilon)
+
         self.__epsilon *= self.__epsilon_decay_rate  # decay epislon
 
     @property

@@ -1,10 +1,11 @@
-from os import walk, listdir
+from os import walk
 
 import tensorflow as tf
 
 import parameters
 from ANET import ANET
 from reinforcement_learner import ReinforcementLearner
+from visualize import Visualize
 from world.simulated_world_factory import SimulatedWorldFactory
 
 
@@ -42,6 +43,7 @@ class TOPP:
         self.plot_win_statistics(win_statistics)
 
     def plot_win_statistics(self, statisitcs):
+        Visualize.plot_win_statistics(self.agents, statisitcs)
         for agent, wins in zip(self.agents, statisitcs):
             print(f'{str(agent):>10} has won {wins}/{self.number_of_games * (self.number_of_agents - 1)} games')
 

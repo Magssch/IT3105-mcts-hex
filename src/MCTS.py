@@ -1,5 +1,5 @@
 from math import log, sqrt
-from typing import Callable, Tuple
+from typing import Callable, Literal, Tuple, Union
 
 import parameters
 from TreeNode import TreeNode
@@ -9,6 +9,11 @@ Policy = Callable[[Tuple[int, ...], Tuple[int, ...]], int]  # s -> a
 
 
 class MCTS:
+
+    player_sign = {
+        1: 1,
+        2: -1
+    }
 
     def __init__(self, initial_state: Tuple[int, ...]) -> None:
         self.root = TreeNode(initial_state)
@@ -70,7 +75,8 @@ class MCTS:
         """
         Choses an action based on the UCT score of that corresponding node
         """
-        return max(node.children.keys(), key=lambda key: self.UCT(node.children[key]))
+        policy_func = max if node.player_id == 1 else min
+        return policy_func(node.children.keys(), key=lambda key: self.UCT(node.children[key]))
 
     def UCT(self, node: TreeNode) -> float:
-        return node.value + parameters.UCT_C * sqrt(2 * log(self.root.visits) / (node.visits + 1))
+        return node.value + (MCTS.player_sign[node.player_id] * parameters.UCT_C * sqrt(2 * log(self.root.visits) / (node.visits + 1)))
