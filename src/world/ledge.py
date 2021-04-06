@@ -46,8 +46,6 @@ class Ledge(SimulatedWorld):
         legal_actions = []
         for action in range(self.__action_space):
             legal_actions.append(int(self.__is_legal_action(self.__board, self.index_to_tuple(action))))
-        # print("Board", self.__board)
-        # print("Actions", legal_actions)
         return tuple(legal_actions)
 
     def generate_child_states(self) -> Tuple[Tuple[int, ...], ...]:
