@@ -48,7 +48,7 @@ class ANET:
         if model_name is None:
             self.__model: Sequential = self.__build_model()
         else:
-           self.load(model_name)
+            self.load(model_name)
 
         self.__loss_history = []
         self.__epsilon_history = []
@@ -67,7 +67,8 @@ class ANET:
         model.add(Dense(output_dim, activation=softmax))
 
         model.compile(
-            optimizer=(self.__optimizer(learning_rate=self.__learning_rate) if self.__learning_rate is not None else self.__optimizer()),
+            optimizer=(self.__optimizer(learning_rate=self.__learning_rate)
+                       if self.__learning_rate is not None else self.__optimizer()),
             loss=kl_divergence
         )
         model.summary()
@@ -96,7 +97,8 @@ class ANET:
     def choose_greedy(self, state: Tuple[int, ...], valid_actions: Tuple[int, ...]) -> int:
         action_probabilities = self.__model(tf.convert_to_tensor([state])).numpy()
         action_probabilities = action_probabilities * np.array(valid_actions)
-        action_probabilities = normalize(action_probabilities)
+        action_probabilities = action_probabilities.flatten()
+        action_probabilities /= np.sum(action_probabilities)  # normalize
         return np.argmax(action_probabilities)
 
     def fit(self, batch: np.ndarray) -> None:
