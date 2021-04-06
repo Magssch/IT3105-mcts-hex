@@ -34,6 +34,9 @@ class Ledge(SimulatedWorld):
             self.__board[coin_position] = 0
         return self.__get_state()
 
+    def get_winner_id(self) -> int:
+        return self.__player_id
+
     def get_legal_actions(self) -> Tuple[int, ...]:
         pass
 
