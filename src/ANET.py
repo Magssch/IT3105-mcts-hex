@@ -8,7 +8,6 @@ from keras.activations import softmax
 from keras.layers import Dense, Input
 from keras.losses import kl_divergence
 from keras.models import Sequential
-from keras.utils import normalize
 
 import parameters
 

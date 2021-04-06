@@ -1,11 +1,11 @@
 from math import log, sqrt
-from typing import Callable, Literal, Tuple, Union
+from typing import Callable, Tuple
 
 import parameters
 from TreeNode import TreeNode
 from world.simulated_world import SimulatedWorld
 
-Policy = Callable[[Tuple[int, ...], Tuple[int, ...]], int]  # s -> a
+Policy = Callable[[Tuple[int, ...], Tuple[int, ...]], int]  # (s, valid_actions) -> a
 
 
 class MCTS:
@@ -21,24 +21,23 @@ class MCTS:
 
     def update_root(self, action: int) -> None:
         self.root.parent = None
-        print(self.root.children)
-        print(action)
         self.root = self.root.children[action]
 
     def get_normalized_distribution(self) -> Tuple[float, ...]:
         distribution = []
         for action in range(self.action_space):
             if action in self.root.children:
-                distribution.append(self.root.children[action].visits / self.root.visits)
+                distribution.append(float(self.root.children[action].visits) / float(self.root.visits))
             else:
-                distribution.append(0)
+                distribution.append(0.0)
+        assert sum(distribution) != 0, f'Target distribution should never be zero. {distribution}'
         return tuple(distribution)
 
     def tree_search(self, rootNode: TreeNode, world: SimulatedWorld) -> TreeNode:
         current_node = rootNode
         while not current_node.is_leaf:
             action = self.tree_policy(current_node)
-            _, winner = world.step(action)
+            _, _ = world.step(action)
             current_node = current_node.children[action]
 
         # Node is terminal state
@@ -58,13 +57,12 @@ class MCTS:
         if leaf_node.is_terminal:
             return world.get_winner_id()
 
-        winner = -1
         current_state = leaf_node.state
         while not world.is_final_state():
             legal_actions = world.get_legal_actions()
             action = default_policy(current_state, legal_actions)
-            current_state, winner = world.step(action)
-        return winner
+            current_state, _ = world.step(action)
+        return world.get_winner_id()
 
     def do_backpropagation(self, leaf_node: TreeNode, winner: int) -> None:
         current_node = leaf_node

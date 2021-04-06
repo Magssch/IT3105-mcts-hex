@@ -46,11 +46,14 @@ class ReinforcementLearner:
             monte_carlo_game = SimulatedWorldFactory.get_simulated_world(root_state)
 
             start_time = time()
+            number_of_rollouts = 0
             while time() - start_time < self.__simulation_time_out:
                 leaf_node = monte_carlo_tree.tree_search(monte_carlo_tree.root, monte_carlo_game)
                 winner = monte_carlo_tree.do_rollout(leaf_node, self.__ANET.choose_action, monte_carlo_game)
                 monte_carlo_tree.do_backpropagation(leaf_node, winner)
                 monte_carlo_game.reset(root_state)
+                number_of_rollouts += 1
+            print(number_of_rollouts)
 
             target_distribution = monte_carlo_tree.get_normalized_distribution()
             if self.__buffer_insertion_index < self.__replay_buffer_size:
