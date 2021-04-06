@@ -6,14 +6,15 @@ from world.simulated_world import SimulatedWorld
 
 
 class Ledge(SimulatedWorld):
+    opposite_player = {
+        1: 2,
+        2: 1
+    }
 
     def __init__(self, state: Optional[Tuple[int, ...]] = None):
         self.__size = parameters.SIZE
-
-        if state is None:
-            self.__player_id, *self.__board = list(self.reset())
-        else:
-            self.__player_id, *self.__board = list(state)
+        self.__action_space = parameters.NUMBER_OF_ACTIONS
+        self.reset(state)
 
     def reset(self, state: Optional[Tuple[int, ...]] = None) -> Tuple[int, ...]:
         if state is None:
@@ -26,19 +27,31 @@ class Ledge(SimulatedWorld):
     def is_final_state(self) -> bool:
         return 2 not in self.__board
 
-    def step(self, action: Tuple[int, int]) -> Tuple[int, ...]:
-        coin_position, landing_position = action
+    def get_winner_id(self) -> int:
+        if self.is_final_state():
+            return Ledge.opposite_player[self.__player_id]
+        else:
+            return 0
+
+    def step(self, action: int) -> Tuple[Tuple[int, ...], int]:
+        coin_position, landing_position = self.index_to_tuple(action)
         if landing_position >= 0:
             self.__board[landing_position], self.__board[coin_position] = self.__board[coin_position], 0
         else:
             self.__board[coin_position] = 0
-        return self.__get_state()
+        self.__player_id = Ledge.opposite_player[self.__player_id]
+        return self.__get_state(), self.get_winner_id()
 
     def get_legal_actions(self) -> Tuple[int, ...]:
-        pass
+        legal_actions = []
+        for action in range(self.__action_space):
+            legal_actions.append(int(self.__is_legal_action(self.__board, self.index_to_tuple(action))))
+        # print("Board", self.__board)
+        # print("Actions", legal_actions)
+        return tuple(legal_actions)
 
     def generate_child_states(self) -> Tuple[Tuple[int, ...], ...]:
-        possible_actions = self.__generate_possible_actions()
+        possible_actions = self.get_legal_actions()
         return tuple(self.generate_state(action) for action in possible_actions)
 
     def __get_state(self) -> Tuple[int, ...]:
@@ -52,14 +65,6 @@ class Ledge(SimulatedWorld):
         else:
             board[coin_position] = 0
         return (self.__player_id, *board)
-
-    def __generate_possible_actions(self) -> Tuple[Tuple[int, int], ...]:
-        possible_actions = []
-        for coin_position in range(self.__size):
-            for landing_position in range(-1, coin_position):
-                if self.__is_legal_action(self.__board, (coin_position, landing_position)):
-                    possible_actions.append((coin_position, landing_position))
-        return tuple(possible_actions)
 
     def __is_legal_action(self, board: List[int], action: Tuple[int, int]) -> bool:
         coin_position, landing_position = action

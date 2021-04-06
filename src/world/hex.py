@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import deque
-from typing import List, Optional, Set, Tuple
+from typing import Optional, Set, Tuple
 
 import parameters
 # from visualize import Visualize

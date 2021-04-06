@@ -21,6 +21,8 @@ class MCTS:
 
     def update_root(self, action: int) -> None:
         self.root.parent = None
+        print(self.root.children)
+        print(action)
         self.root = self.root.children[action]
 
     def get_normalized_distribution(self) -> Tuple[float, ...]:

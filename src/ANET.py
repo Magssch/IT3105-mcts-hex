@@ -48,7 +48,7 @@ class ANET:
         if model_name is None:
             self.__model: Sequential = self.__build_model()
         else:
-           self.load(model_name)
+            self.load(model_name)
 
         self.__loss_history = []
         self.__epsilon_history = []

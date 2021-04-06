@@ -10,6 +10,7 @@ def clear_models():
     for f in files:
         os.remove(f)
 
+
 if __name__ == "__main__":
     clear_models()
 
