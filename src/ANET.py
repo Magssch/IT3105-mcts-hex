@@ -78,7 +78,7 @@ class ANET:
 
     def load(self, model_name: str) -> None:
         self.__name = 'Agent-e' + model_name.replace('.h5', '')
-        self.__model = tf.keras.models.load_model(f'src/models/{model_name}')
+        self.__model = tf.keras.models.load_model(f'models/{model_name}')
 
     def set_epsilon(self, epsilon: float):
         self.__epsilon = epsilon

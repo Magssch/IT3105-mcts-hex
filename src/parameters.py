@@ -4,7 +4,7 @@ from keras.optimizers import SGD, Adagrad, Adam, RMSprop  # noqa
 from game import Game
 
 # MCTS parameters
-EPISODES = 200
+EPISODES = 100
 NUMBER_OF_ROLLOUTS = 50 # M
 UCT_C = 1.25  # "Often 1"
 
@@ -27,5 +27,5 @@ ANET_BATCH_SIZE = 50
 ANET_DIMENSIONS = (STATE_SIZE, 32, 32, NUMBER_OF_ACTIONS)
 
 # TOPP parameters
-ANETS_TO_BE_CACHED = 5
+ANETS_TO_BE_CACHED = 3
 NUMBER_OF_GAMES = 10

@@ -1,4 +1,4 @@
-from os import walk
+from os import walk, listdir
 
 import tensorflow as tf
 
@@ -18,7 +18,7 @@ class TOPP:
         self.visualize_game = parameters.VISUALIZE_GAMES
 
     def get_agents(self):
-        _, _, models = next(walk('src/models'))
+        _, _, models = next(walk('models'))
         agents = []
         for model in sorted(models, key=lambda name: int(name.split(".")[0])):
             agent = ANET(model)
