@@ -1,12 +1,9 @@
 from os import walk
 
-import tensorflow as tf
-
 import parameters
 from ANET import ANET
 from reinforcement_learner import ReinforcementLearner
 from visualize import Visualize
-from world.simulated_world_factory import SimulatedWorldFactory
 
 
 class TOPP:

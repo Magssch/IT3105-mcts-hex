@@ -20,23 +20,25 @@ class MCTS:
         self.action_space = parameters.NUMBER_OF_ACTIONS
 
     def update_root(self, action: int) -> None:
-        self.root.parent = None
         self.root = self.root.children[action]
+        self.root.parent = None
 
     def get_normalized_distribution(self) -> Tuple[float, ...]:
+        # print(list(map(lambda node: node.visits, self.root.children.values())), "/", self.root.visits - 1)
         distribution = []
         for action in range(self.action_space):
             if action in self.root.children:
-                distribution.append(float(self.root.children[action].visits) / float(self.root.visits))
+                distribution.append(float(self.root.children[action].visits) / float(self.root.visits - 1))
             else:
                 distribution.append(0.0)
-        assert sum(distribution) != 0, f'Target distribution should never be zero. {distribution}'
         return tuple(distribution)
 
     def tree_search(self, rootNode: TreeNode, world: SimulatedWorld) -> TreeNode:
         current_node = rootNode
         while not current_node.is_leaf:
             action = self.tree_policy(current_node)
+            # print('UCT values', list(map(lambda key: (key, self.UCT(current_node.children[key])), current_node.children.keys())))
+            # print(f'Node chosen {action}. For player {current_node.player_id}')
             _, _ = world.step(action)
             current_node = current_node.children[action]
 
@@ -78,5 +80,6 @@ class MCTS:
         policy_func = max if node.player_id == 1 else min
         return policy_func(node.children.keys(), key=lambda key: self.UCT(node.children[key]))
 
-    def UCT(self, node: TreeNode) -> float:
-        return node.value + (MCTS.player_sign[node.player_id] * parameters.UCT_C * sqrt(2 * log(self.root.visits) / (node.visits + 1)))
+    def UCT(self, child_node: TreeNode) -> float:
+        c = -parameters.UCT_C if child_node.player_id == 1 else parameters.UCT_C
+        return child_node.value + (c * sqrt(2 * log(child_node.parent.visits) / (child_node.visits + 1)))

@@ -38,7 +38,7 @@ class TreeNode:
 
     @property
     def value(self) -> float:
-        return self.score / self.visits if self.visits != 0 else 0
+        return self.score / self.__visits if self.__visits != 0 else 0
 
     def set_terminal(self):
         self.__is_terminal = True
