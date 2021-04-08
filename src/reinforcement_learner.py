@@ -99,8 +99,6 @@ class ReinforcementLearner:
 
     @staticmethod
     def run_one_game(player_1: ANET, player_2: ANET, visualize=False) -> int:
-        player_1.set_epsilon(0.0)
-        player_2.set_epsilon(0.0)
         world = SimulatedWorldFactory.get_simulated_world()
         current_state = world.reset()
 
@@ -113,7 +111,7 @@ class ReinforcementLearner:
             legal_actions = world.get_legal_actions()
 
             player = player_1 if player_id == 1 else player_2
-            action = player.choose_action(current_state, legal_actions)
+            action = player.choose_greedy(current_state, legal_actions)
 
             current_state, winner = world.step(action)
 

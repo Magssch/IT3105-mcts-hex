@@ -54,7 +54,7 @@ class ANET:
 
     def __build_model(self) -> Sequential:
         """Builds a neural network model with the provided dimensions and learning rate"""
-        self.__name = 'Reidar'
+        self.__name = 'Training model'
         input_dim, *hidden_dims, output_dim = parameters.ANET_DIMENSIONS
 
         model = Sequential()
@@ -79,9 +79,6 @@ class ANET:
     def load(self, model_name: str) -> None:
         self.__name = 'Agent-e' + model_name.replace('.h5', '')
         self.__model = tf.keras.models.load_model(f'models/{model_name}')
-
-    def set_epsilon(self, epsilon: float):
-        self.__epsilon = epsilon
 
     def choose_action(self, state: Tuple[int, ...], valid_actions: Tuple[int, ...]) -> int:
         """Epsilon-greedy action selection function."""
