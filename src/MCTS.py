@@ -10,11 +10,6 @@ Policy = Callable[[Tuple[int, ...], Tuple[int, ...]], int]  # (s, valid_actions)
 
 class MCTS:
 
-    player_sign = {
-        1: 1,
-        2: -1
-    }
-
     def __init__(self, initial_state: Tuple[int, ...]) -> None:
         self.root = TreeNode(initial_state)
         self.action_space = parameters.NUMBER_OF_ACTIONS
