@@ -12,10 +12,10 @@ def clear_models():
 
 
 if __name__ == "__main__":
-    clear_models()
+    # clear_models()
 
-    agent = ReinforcementLearner()
-    agent.run()
+    # agent = ReinforcementLearner()
+    # agent.run()
 
     topp = TOPP()
     topp.run()

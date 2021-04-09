@@ -1,11 +1,11 @@
 import random
-from src.game import Game
 from time import time
 
 import numpy as np
 
 import parameters
 from ANET import ANET
+from game import Game
 from MCTS import MCTS
 from visualize import Visualize
 from world.simulated_world_factory import SimulatedWorldFactory
@@ -114,7 +114,7 @@ class ReinforcementLearner:
             action = players[i].choose_greedy(current_state, legal_actions)
             current_state, winner = world.step(action)
 
-            i = i + 1 % 2
+            i = (i + 1) % 2
 
             if visualize and parameters.GAME_TYPE == Game.Hex:
                 Visualize.draw_board(current_state, winner)

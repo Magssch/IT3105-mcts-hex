@@ -17,6 +17,7 @@ class TOPP:
 
     def get_agents(self):
         _, _, models = next(walk('models'))
+        models = filter(lambda name: name[0] != '.', models)
         agents = []
         for model in sorted(models, key=lambda name: int(name.split(".")[0])):
             agent = ANET(model)
