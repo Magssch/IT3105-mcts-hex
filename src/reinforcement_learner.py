@@ -1,4 +1,5 @@
 import random
+from src.game import Game
 from time import time
 
 import numpy as np
@@ -47,9 +48,7 @@ class ReinforcementLearner:
 
             start_time = time()
             while time() - start_time < self.__simulation_time_out:
-                leaf_node = monte_carlo_tree.tree_search(monte_carlo_tree.root, monte_carlo_game)
-                winner = monte_carlo_tree.do_rollout(leaf_node, self.__ANET.choose_action, monte_carlo_game)
-                monte_carlo_tree.do_backpropagation(leaf_node, winner)
+                monte_carlo_tree.do_one_simulation(self.__ANET.choose_action, monte_carlo_game)
                 monte_carlo_game.reset(root_state)
 
             target_distribution = monte_carlo_tree.get_normalized_distribution()
@@ -59,6 +58,7 @@ class ReinforcementLearner:
             else:
                 i = self.__buffer_insertion_index % self.__replay_buffer_size
                 self.__replay_buffer[i] = np.array([root_state + target_distribution])
+            self.__buffer_insertion_index += 1
 
             legal_actions = self.__actual_game.get_legal_actions()
             action = self.__ANET.choose_greedy(root_state, legal_actions)
@@ -72,7 +72,7 @@ class ReinforcementLearner:
         self.__ANET.fit(self.__replay_buffer[random_rows])
 
     def __sample_replay_buffer(self):
-        number_of_rows = self.__replay_buffer.shape[0]
+        number_of_rows = min(self.__buffer_insertion_index, self.__replay_buffer_size)
         batch_size = min(number_of_rows, self.__batch_size)
         return random.sample(range(0, number_of_rows), batch_size)
 
@@ -81,14 +81,14 @@ class ReinforcementLearner:
         Runs all episodes with pivotal parameters.
         Visualizes one round at the end.
         """
-        self.__ANET.save(str(0) + ".h5")  # Save the untrained ANET before episode 1
+        self.__ANET.save('0.h5')  # Save the untrained ANET before episode 1
         for episode in range(1, self.__episodes + 1):
             print('\nEpisode:', episode)
             self.__run_one_episode()
 
             if episode % self.__caching_interval == 0:
                 # Save ANET for later use in tournament play.
-                self.__ANET.save(str(episode) + ".h5")
+                self.__ANET.save(str(episode) + '.h5')
 
         Visualize.plot_loss(self.__ANET.loss_history)
         Visualize.plot_epsilon(self.__ANET.epsilon_history)
@@ -102,20 +102,21 @@ class ReinforcementLearner:
         world = SimulatedWorldFactory.get_simulated_world()
         current_state = world.reset()
 
-        if visualize:
+        if visualize and parameters.GAME_TYPE == Game.Hex:
             Visualize.initialize_board(current_state)
 
+        players = (player_1, player_2)
+        i = 0
         winner = 0
         while not world.is_final_state():
-            player_id = current_state[0]
             legal_actions = world.get_legal_actions()
 
-            player = player_1 if player_id == 1 else player_2
-            action = player.choose_greedy(current_state, legal_actions)
-
+            action = players[i].choose_greedy(current_state, legal_actions)
             current_state, winner = world.step(action)
 
-            if visualize:
+            i = i + 1 % 2
+
+            if visualize and parameters.GAME_TYPE == Game.Hex:
                 Visualize.draw_board(current_state, winner)
 
         print(f'Player {winner} has won the game.')

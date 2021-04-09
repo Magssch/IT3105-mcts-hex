@@ -4,11 +4,11 @@ from keras.optimizers import SGD, Adagrad, Adam, RMSprop  # noqa
 from game import Game
 
 # RL parameters
-REPLAY_BUFFER_SIZE = 64
+REPLAY_BUFFER_SIZE = 128
 
 # MCTS parameters
 EPISODES = 100
-SIMULATION_TIME_OUT = 0.2  # s
+SIMULATION_TIME_OUT = 0.5  # s
 UCT_C = 1  # "theoretically 1"
 
 # Simulated World
@@ -30,5 +30,5 @@ ANET_BATCH_SIZE = 64
 ANET_DIMENSIONS = (STATE_SIZE, 37, 37, NUMBER_OF_ACTIONS)
 
 # TOPP parameters
-ANETS_TO_BE_CACHED = 11
+ANETS_TO_BE_CACHED = 6
 NUMBER_OF_GAMES = 1

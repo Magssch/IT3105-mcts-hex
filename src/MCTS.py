@@ -58,7 +58,7 @@ class MCTS:
         while not world.is_final_state():
             legal_actions = world.get_legal_actions()
             action = default_policy(current_state, legal_actions)
-            current_state, _ = world.step(action)
+            current_state, winner = world.step(action)
         return world.get_winner_id()
 
     def do_backpropagation(self, leaf_node: TreeNode, winner: int) -> None:
@@ -68,13 +68,45 @@ class MCTS:
             current_node.increment_visit_count()
             current_node = current_node.parent
 
+    def do_one_simulation(self, default_policy: Policy, world: SimulatedWorld) -> None:
+        # Tree search
+        current_node = self.root
+        while not current_node.is_leaf:
+            action = current_node.tree_policy()
+            # print('UCT values', list(map(lambda key: (key, self.UCT(current_node.children[key])), current_node.children.keys())))
+            # print(f'Node chosen {action}. For player {current_node.player_id}')
+            world.step(action)
+            current_node = current_node.children[action]
+
+        # Node expansion
+        if not world.is_final_state() and current_node.visits != 0:
+            for action, legal in enumerate(world.get_legal_actions()):
+                if bool(legal):
+                    current_node.add_node(action, world.generate_state(action))
+            current_node = list(current_node.children.values())[0]
+
+        # Rollout
+        current_state = current_node.state
+        while not world.is_final_state():
+            legal_actions = world.get_legal_actions()
+            action = default_policy(current_state, legal_actions)
+            current_state, winner = world.step(action)
+
+        # Backpropagation
+        while current_node is not None:
+            current_node.add_reward(world.get_winner_id())
+            current_node.increment_visit_count()
+            current_node = current_node.parent
+
     def tree_policy(self, node: TreeNode) -> int:
         """
         Choses an action based on the UCT score of that corresponding node
         """
         policy_func = max if node.player_id == 1 else min
-        return policy_func(node.children.keys(), key=lambda key: self.UCT(node.children[key]))
+        return policy_func(node.children.keys(), key=lambda key: node.children[key].UCT)
 
     def UCT(self, child_node: TreeNode) -> float:
         c = -parameters.UCT_C if child_node.player_id == 1 else parameters.UCT_C
-        return child_node.value + (c * sqrt(2 * log(child_node.parent.visits) / (child_node.visits + 1)))
+        exploitation = child_node.value
+        exploration = c * sqrt(2 * log(child_node.parent.visits) / (child_node.visits + 1))
+        return exploitation + exploration
