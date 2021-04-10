@@ -24,6 +24,8 @@ class ReinforcementLearner:
     -------
     run():
         Runs all episodes with pivotal parameters
+    run_one_game(player_1: ANET, player_2: ANET, visualize=False):
+        Runs excatly one game with the provided players.
     """
 
     def __init__(self) -> None:
@@ -54,10 +56,10 @@ class ReinforcementLearner:
             target_distribution = monte_carlo_tree.get_normalized_distribution()
             # print(target_distribution)
             if self.__buffer_insertion_index < self.__replay_buffer_size:
-                self.__replay_buffer = np.append(self.__replay_buffer, np.array([root_state + target_distribution]), axis=0)
+                self.__replay_buffer = np.append(self.__replay_buffer, np.array([root_state + target_distribution]), axis=0)  # type: ignore
             else:
                 i = self.__buffer_insertion_index % self.__replay_buffer_size
-                self.__replay_buffer[i] = np.array([root_state + target_distribution])
+                self.__replay_buffer[i] = np.array([root_state + target_distribution])  # type: ignore
             self.__buffer_insertion_index += 1
 
             legal_actions = self.__actual_game.get_legal_actions()
