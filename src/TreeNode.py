@@ -15,7 +15,6 @@ class TreeNode:
 
     def __init__(self, state: Tuple[int, ...], parent: Optional[TreeNode] = None) -> None:
         self.state = state
-        self.is_terminal: bool = False
 
         self.score = 0
         self.visits = 0
@@ -23,10 +22,6 @@ class TreeNode:
         self.c = -parameters.UCT_C if state[0] == 1 else parameters.UCT_C
         self.parent = parent
         self.children: Dict[int, TreeNode] = {}
-
-    def tree_policy(self) -> int:
-        policy_function = max if self.state[0] == 1 else min
-        return policy_function(self.children.keys(), key=lambda key: self.children[key].UCT)
 
     @property
     def UCT(self) -> float:
@@ -36,22 +31,13 @@ class TreeNode:
         exploration = self.c * sqrt(2 * log(self.parent.visits) / (self.visits))
         return exploitation + exploration
 
-    def player_id(self) -> int:
-        return self.state[0]
+    def tree_policy(self) -> int:
+        policy_function = max if self.state[0] == 1 else min
+        return policy_function(self.children.keys(), key=lambda key: self.children[key].UCT)
 
     @property
-    def is_leaf(self) -> bool:
-        return not bool(self.children)
-
-    @property
-    def value(self) -> float:
-        return self.score / self.visits if self.visits != 0 else 0
-
-    def set_terminal(self):
-        self.is_terminal = True
-
-    def get_parent(self) -> Optional[TreeNode]:
-        return self.parent
+    def is_not_leaf(self) -> bool:
+        return bool(self.children)
 
     def add_reward(self, winner: int) -> None:
         self.score += TreeNode.player_reward[winner]
