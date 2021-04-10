@@ -71,7 +71,8 @@ class ReinforcementLearner:
 
     def __add_to_replay_buffer(self, root_state: Tuple[int, ...], target_distribution: Tuple[float, ...]):
         if self.__buffer_insertion_index < self.__replay_buffer_size:
-            self.__replay_buffer = np.append(self.__replay_buffer, np.array([root_state + target_distribution]), axis=0)  # type: ignore
+            self.__replay_buffer = np.append(self.__replay_buffer, np.array(
+                [root_state + target_distribution]), axis=0)  # type: ignore
         else:
             i = self.__buffer_insertion_index % self.__replay_buffer_size
             self.__replay_buffer[i] = np.array([root_state + target_distribution])  # type: ignore
@@ -120,6 +121,7 @@ class ReinforcementLearner:
             action = players[i].choose_softmax(current_state, legal_actions)
             current_state, winner = world.step(action)
 
+            # Flip starting player for next round
             i = (i + 1) % 2
 
             if visualize and parameters.GAME_TYPE == Game.Hex:

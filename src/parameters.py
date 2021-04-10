@@ -1,5 +1,7 @@
+from ANET import deepnet_cross_entropy
 from keras.activations import linear, relu, sigmoid, tanh  # noqa
-from keras.optimizers import SGD, Adagrad, Adam, RMSprop  # noqa
+from keras.optimizers import SGD, Adagrad, Adam, RMSprop   # noqa
+from keras.losses import kl_divergence                     # noqa
 
 from game import Game
 

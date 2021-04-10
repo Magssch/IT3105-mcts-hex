@@ -6,7 +6,6 @@ import tensorflow as tf
 from keras import backend as K  # noqa
 from keras.activations import softmax
 from keras.layers import Dense, Input
-from keras.losses import kl_divergence
 from keras.models import Sequential
 
 import parameters
@@ -71,7 +70,7 @@ class ANET:
         model.compile(
             optimizer=(self.__optimizer(learning_rate=self.__learning_rate)
                        if self.__learning_rate is not None else self.__optimizer()),
-            loss=kl_divergence
+            loss=parameters.ANET_LOSS_FUNCTION
         )
         model.summary()
         return model
@@ -89,7 +88,7 @@ class ANET:
 
     def load(self, model_name: str) -> None:
         self.__name = 'Agent-e' + model_name.replace('.h5', '')
-        self.__model = tf.keras.models.load_model(f'models/{model_name}')  # type: ignore
+        self.__model = tf.keras.models.load_model(f'models/{model_name}', compile=False)  # type: ignore
 
     def choose_action(self, state: Tuple[int, ...], valid_actions: Tuple[int, ...]) -> int:
         """Epsilon-greedy action selection function."""
@@ -105,7 +104,7 @@ class ANET:
         action_probabilities = self.__model(tf.convert_to_tensor([state])).numpy()  # type: ignore
         action_probabilities = action_probabilities * np.array(valid_actions)
         action_probabilities = action_probabilities.flatten()
-        action_probabilities /= np.sum(action_probabilities)  # normalize
+        action_probabilities /= np.sum(action_probabilities)  # normalize probability distribution
         return np.argmax(action_probabilities)
 
     def choose_softmax(self, state: Tuple[int, ...], valid_actions: Tuple[int, ...]) -> int:
@@ -122,10 +121,19 @@ class ANET:
         self.__loss_history.append(history.history["loss"][0])  # type: ignore
         self.__epsilon_history.append(self.__epsilon)
 
-        self.__epsilon *= self.__epsilon_decay_rate  # decay epislon
+        self.__epsilon *= self.__epsilon_decay_rate  # decay epsilon
 
     def __str__(self) -> str:
         return self.__name
 
     def __repr__(self) -> str:
         return self.__name
+
+
+def deepnet_cross_entropy(targets, outs):
+    # Keith's cross-entropy formula
+    return tf.reduce_mean(tf.reduce_sum(-1 * targets * safelog(outs), axis=[1]))
+
+
+def safelog(tensor, base=0.0001):
+    return tf.math.log(tf.math.maximum(tensor, base))
