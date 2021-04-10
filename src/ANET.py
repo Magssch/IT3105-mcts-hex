@@ -14,26 +14,29 @@ import parameters
 
 class ANET:
     """
-    Table-based Actor using the epsilon-greedy strategy
+    Actor NETwork using the epsilon-greedy strategy
 
     ...
 
     Attributes
     ----------
+    loss_history
+    epsilon_history
 
     Methods
     -------
-    choose_action(state, possible_actions):
-
-        Epsilon-greedy action selection function.
-    update(td_error):
-        Updates the policy function, then eligibilities for each state-action
-        pair in the episode based on the td_error from the critic.
-        Also decays the epsilon based on the epsilon decay rate.
-    reset_eligibilities():
-        Sets all eligibilities to 0.0
-    replace_eligibilities(state, action):
-        Replaces trace e(state) with 1.0
+    save(model_name: str) -> None:
+        Saves model with model_name to t 'models/' for later use in TOPP play.
+    load(model_name: str) -> None:
+        Loads model with model_name from 'models/' for use in TOPP play.
+    choose_uniform(valid_actions: Tuple[int, ...]) -> int:
+        Chooses a random action from valid_actions
+    choose_greedy(state: Tuple[int, ...], valid_actions: Tuple[int, ...]) -> int:
+        Chooses an action with the greatest likelihood renormalized based on valid_actions
+    choose_action(state: Tuple[int, ...], valid_actions: Tuple[int, ...]) -> int:
+        Choses an action uniformly with a probability of epsilon otherwise greedily with a probability of (1 - epsilon)
+    fit(batch: np.ndarray) -> None:
+        Trains the model on the dataset supervised learning style.
     """
 
     def __init__(self, model_name: Optional[str] = None) -> None:
@@ -73,12 +76,20 @@ class ANET:
         model.summary()
         return model
 
+    @property
+    def loss_history(self):
+        return self.__loss_history
+
+    @property
+    def epsilon_history(self):
+        return self.__epsilon_history
+
     def save(self, model_name: str) -> None:
         self.__model.save(f'models/{model_name}')
 
     def load(self, model_name: str) -> None:
         self.__name = 'Agent-e' + model_name.replace('.h5', '')
-        self.__model = tf.keras.models.load_model(f'models/{model_name}')
+        self.__model = tf.keras.models.load_model(f'models/{model_name}')  # type: ignore
 
     def choose_action(self, state: Tuple[int, ...], valid_actions: Tuple[int, ...]) -> int:
         """Epsilon-greedy action selection function."""
@@ -91,7 +102,7 @@ class ANET:
         return random.choice([i for i, action in enumerate(valid_actions) if action == 1])
 
     def choose_greedy(self, state: Tuple[int, ...], valid_actions: Tuple[int, ...]) -> int:
-        action_probabilities = self.__model(tf.convert_to_tensor([state])).numpy()
+        action_probabilities = self.__model(tf.convert_to_tensor([state])).numpy()  # type: ignore
         action_probabilities = action_probabilities * np.array(valid_actions)
         action_probabilities = action_probabilities.flatten()
         action_probabilities /= np.sum(action_probabilities)  # normalize
@@ -102,18 +113,10 @@ class ANET:
         history = self.__model.fit(X, Y, batch_size=parameters.ANET_BATCH_SIZE)
 
         # Used for visualization
-        self.__loss_history.append(history.history["loss"][0])
+        self.__loss_history.append(history.history["loss"][0])  # type: ignore
         self.__epsilon_history.append(self.__epsilon)
 
         self.__epsilon *= self.__epsilon_decay_rate  # decay epislon
-
-    @property
-    def loss_history(self):
-        return self.__loss_history
-
-    @property
-    def epsilon_history(self):
-        return self.__epsilon_history
 
     def __str__(self) -> str:
         return self.__name
