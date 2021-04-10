@@ -1,6 +1,6 @@
 import random
 from time import time
-from typing import List, Tuple
+from typing import Tuple
 
 import numpy as np
 
@@ -117,7 +117,7 @@ class ReinforcementLearner:
         while not world.is_final_state():
             legal_actions = world.get_legal_actions()
 
-            action = players[i].choose_greedy(current_state, legal_actions)
+            action = players[i].choose_softmax(current_state, legal_actions)
             current_state, winner = world.step(action)
 
             i = (i + 1) % 2

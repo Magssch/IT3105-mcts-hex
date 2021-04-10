@@ -108,6 +108,12 @@ class ANET:
         action_probabilities /= np.sum(action_probabilities)  # normalize
         return np.argmax(action_probabilities)
 
+    def choose_softmax(self, state: Tuple[int, ...], valid_actions: Tuple[int, ...]) -> int:
+        action_probabilities = self.__model(tf.convert_to_tensor([state])).numpy().flatten()  # type: ignore
+        action_probabilities = action_probabilities * np.array(valid_actions)
+        action_probabilities /= np.sum(action_probabilities)  # normalize
+        return np.random.choice(len(valid_actions), 1, p=list(action_probabilities))[0]  # type: ignore
+
     def fit(self, batch: np.ndarray) -> None:
         X, Y = batch[:, :parameters.STATE_SIZE], batch[:, parameters.STATE_SIZE:]
         history = self.__model.fit(X, Y, batch_size=parameters.ANET_BATCH_SIZE)
