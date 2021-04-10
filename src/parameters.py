@@ -1,5 +1,7 @@
+from src.ANET import ANET
 from keras.activations import linear, relu, sigmoid, tanh  # noqa
-from keras.optimizers import SGD, Adagrad, Adam, RMSprop  # noqa
+from keras.optimizers import SGD, Adagrad, Adam, RMSprop   # noqa
+from keras.losses import kl_divergence                     # noqa
 
 from game import Game
 
@@ -8,13 +10,13 @@ REPLAY_BUFFER_SIZE = 64
 
 # MCTS parameters
 EPISODES = 100
-SIMULATION_TIME_OUT = 1.5  # s
+SIMULATION_TIME_OUT = 1  # s
 UCT_C = 1  # "theoretically 1"
 
 # Simulated World
 GAME_TYPE = Game.Hex
 LEDGE_BOARD = (0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 2, 0, 0, 1, 1, 1)  # (0, 2, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1)
-SIZE = 3 if GAME_TYPE == Game.Hex else len(LEDGE_BOARD)  # 3 <= k <= 10
+SIZE = 6 if GAME_TYPE == Game.Hex else len(LEDGE_BOARD)  # 3 <= k <= 10
 STATE_SIZE = 1 + (SIZE ** 2 if GAME_TYPE == Game.Hex else SIZE)
 NUMBER_OF_ACTIONS = SIZE ** 2 if GAME_TYPE == Game.Hex else int((SIZE ** 2 - SIZE) / 2) + 1
 VISUALIZE_GAMES = False
@@ -26,6 +28,7 @@ ANET_EPSILON_DECAY = 1
 ANET_LEARNING_RATE = 0.02
 ANET_ACTIVATION_FUNCTION = relu  # linear, relu, sigmoid, or tanh
 ANET_OPTIMIZER = Adam  # SGD, Adagrad, Adam, or RMSprop
+ANET_LOSS_FUNCTION = ANET.deepnet_cross_entropy  # SGD, Adagrad, Adam, or RMSprop
 ANET_BATCH_SIZE = 64
 ANET_DIMENSIONS = (STATE_SIZE, 37, 37, NUMBER_OF_ACTIONS)
 
