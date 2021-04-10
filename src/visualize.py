@@ -142,13 +142,14 @@ class Visualize:
         plt.close()
 
     @staticmethod
-    def plot_win_statistics(agents, win_statistics):
+    def plot_win_statistics(statistics):
         plt.title('TOPP results')
         plt.xlabel('Agent')
         plt.xticks(rotation=45)
         plt.ylabel('wins')
-
-        plt.bar(list(map(str, agents)), win_statistics)
+        agents = statistics.keys()
+        wins = statistics.values()
+        plt.bar(list(map(str, agents)), wins)
 
         plt.tight_layout()
         plt.savefig('plots/TOPP_results.png')

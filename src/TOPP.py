@@ -11,9 +11,9 @@ class TOPP:
     def __init__(self) -> None:
         self.agents = self.get_agents()
         self.number_of_agents = len(self.agents)
-        self.number_of_series = (self.number_of_agents * (self.number_of_agents - 1 )) / 2
         self.number_of_games = parameters.NUMBER_OF_GAMES
         self.visualize_game = parameters.VISUALIZE_GAMES
+        self.number_of_games_per_agent = self.number_of_games * (self.number_of_agents - 1)
 
     def get_agents(self):
         _, _, models = next(walk('models'))
@@ -25,7 +25,7 @@ class TOPP:
         return agents
 
     def run(self):
-        win_statistics = [0 for _ in range(self.number_of_agents)]
+        win_statistics = {agent: 0 for agent in self.agents}
         for i in range(self.number_of_agents - 1):
             player_1 = self.agents[i]
             for j in range(i + 1, self.number_of_agents):
@@ -34,24 +34,13 @@ class TOPP:
                 for game in range(self.number_of_games):
                     print(f'p1={player_1} is playing against p2={player_2}. Round {game + 1}')
                     winner = ReinforcementLearner.run_one_game(player_1, player_2, self.visualize_game)
-                    if winner == 1:
-                        win_statistics[i] += 1
-                    else:
-                        win_statistics[j] += 1
+                    winner = player_1 if winner == 1 else player_2
+                    win_statistics[winner] += 1
+                    player_1, player_2 = player_2, player_1  # swap positions
+
         self.plot_win_statistics(win_statistics)
 
     def plot_win_statistics(self, statisitcs):
-        Visualize.plot_win_statistics(self.agents, statisitcs)
-        for agent, wins in zip(self.agents, statisitcs):
-            print(f'{str(agent):>10} has won {wins}/{self.number_of_games * (self.number_of_agents - 1)} games')
-
-
-
-
-
-
-
-
-if __name__ == '__main__':
-    topp = TOPP()
-    topp.play()
+        Visualize.plot_win_statistics(statisitcs)
+        for agent, wins in statisitcs.items():
+            print(f'{str(agent):>10} has won {wins}/{self.number_of_games_per_agent} games')
