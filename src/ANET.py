@@ -123,11 +123,11 @@ class ANET:
     def __repr__(self) -> str:
         return self.__name
 
-    # Keith's cross-entropy formula
-    @staticmethod
-    def deepnet_cross_entropy(targets, outs):
-        return tf.reduce_mean(tf.reduce_sum(-1 * targets * ANET.safelog(outs), axis=[1]))
 
-    @staticmethod
-    def safelog(tensor, base=0.0001):
-        return tf.math.log(tf.math.maximum(tensor, base))
+def deepnet_cross_entropy(targets, outs):
+    # Keith's cross-entropy formula
+    return tf.reduce_mean(tf.reduce_sum(-1 * targets * safelog(outs), axis=[1]))
+
+
+def safelog(tensor, base=0.0001):
+    return tf.math.log(tf.math.maximum(tensor, base))
