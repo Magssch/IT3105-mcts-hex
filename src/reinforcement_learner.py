@@ -1,5 +1,6 @@
 import random
 from time import time
+from typing import List, Tuple
 
 import numpy as np
 
@@ -54,13 +55,8 @@ class ReinforcementLearner:
                 monte_carlo_game.reset(root_state)
 
             target_distribution = monte_carlo_tree.get_normalized_distribution()
+            self.__add_to_replay_buffer(root_state, target_distribution)
             # print(target_distribution)
-            if self.__buffer_insertion_index < self.__replay_buffer_size:
-                self.__replay_buffer = np.append(self.__replay_buffer, np.array([root_state + target_distribution]), axis=0)  # type: ignore
-            else:
-                i = self.__buffer_insertion_index % self.__replay_buffer_size
-                self.__replay_buffer[i] = np.array([root_state + target_distribution])  # type: ignore
-            self.__buffer_insertion_index += 1
 
             legal_actions = self.__actual_game.get_legal_actions()
             action = self.__ANET.choose_greedy(root_state, legal_actions)
@@ -72,6 +68,14 @@ class ReinforcementLearner:
         # Train ANET on a random minibatch of cases from RBUF
         random_rows = self.__sample_replay_buffer()
         self.__ANET.fit(self.__replay_buffer[random_rows])
+
+    def __add_to_replay_buffer(self, root_state: Tuple[int, ...], target_distribution: Tuple[float, ...]):
+        if self.__buffer_insertion_index < self.__replay_buffer_size:
+            self.__replay_buffer = np.append(self.__replay_buffer, np.array([root_state + target_distribution]), axis=0)  # type: ignore
+        else:
+            i = self.__buffer_insertion_index % self.__replay_buffer_size
+            self.__replay_buffer[i] = np.array([root_state + target_distribution])  # type: ignore
+        self.__buffer_insertion_index += 1
 
     def __sample_replay_buffer(self):
         number_of_rows = min(self.__buffer_insertion_index, self.__replay_buffer_size)
