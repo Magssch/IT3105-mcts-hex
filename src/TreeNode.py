@@ -50,8 +50,8 @@ class TreeNode:
         self.children[action] = child_node
         return child_node
 
-    def eq(self, o: TreeNode) -> bool:
+    def __eq__(self, o: TreeNode) -> bool:
         return self.state == o.state
 
-    def hash(self) -> int:
+    def __hash__(self) -> int:
         return hash(self.state)
