@@ -132,5 +132,7 @@ dmypy.json
 .vscode/
 
 # Custom
-models/
-parameters/
+models/*
+!models/.gitkeep
+parameters/*
+!parameters/.gitkeep

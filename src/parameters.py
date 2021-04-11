@@ -6,11 +6,11 @@ from ANET import deepnet_cross_entropy  # noqa
 from game import Game
 
 # RL parameters
-REPLAY_BUFFER_SIZE = 256
+REPLAY_BUFFER_SIZE = 32
 
 # MCTS parameters
 EPISODES = 100
-SIMULATION_TIME_OUT = 1  # s
+SIMULATION_TIME_OUT = 1.5  # s
 UCT_C = 1  # "theoretically 1"
 
 # Simulated World
@@ -29,7 +29,7 @@ ANET_LEARNING_RATE = None
 ANET_LOSS_FUNCTION = deepnet_cross_entropy
 ANET_ACTIVATION_FUNCTION = relu  # linear, relu, sigmoid, or tanh
 ANET_OPTIMIZER = Adam  # SGD, Adagrad, Adam, or RMSprop
-ANET_BATCH_SIZE = 256
+ANET_BATCH_SIZE = 32
 ANET_DIMENSIONS = (STATE_SIZE, 37, 37, NUMBER_OF_ACTIONS)
 
 # TOPP parameters
