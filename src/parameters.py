@@ -1,8 +1,8 @@
-from ANET import deepnet_cross_entropy
 from keras.activations import linear, relu, sigmoid, tanh  # noqa
-from keras.optimizers import SGD, Adagrad, Adam, RMSprop   # noqa
-from keras.losses import kl_divergence                     # noqa
+from keras.losses import kl_divergence  # noqa
+from keras.optimizers import SGD, Adagrad, Adam, RMSprop  # noqa
 
+from ANET import deepnet_cross_entropy  # noqa
 from game import Game
 
 # RL parameters
@@ -26,6 +26,7 @@ FRAME_DELAY = 0.4
 ANET_EPSILON = 0
 ANET_EPSILON_DECAY = 1
 ANET_LEARNING_RATE = None
+ANET_LOSS_FUNCTION = deepnet_cross_entropy
 ANET_ACTIVATION_FUNCTION = relu  # linear, relu, sigmoid, or tanh
 ANET_OPTIMIZER = Adam  # SGD, Adagrad, Adam, or RMSprop
 ANET_BATCH_SIZE = 256

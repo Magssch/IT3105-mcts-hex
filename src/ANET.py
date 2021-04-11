@@ -42,6 +42,7 @@ class ANET:
         self.__epsilon = parameters.ANET_EPSILON
         self.__epsilon_decay_rate = parameters.ANET_EPSILON_DECAY
 
+        self.__loss_function = parameters.ANET_LOSS_FUNCTION
         self.__learning_rate = parameters.ANET_LEARNING_RATE
         self.__activation_function = parameters.ANET_ACTIVATION_FUNCTION
         self.__optimizer = parameters.ANET_OPTIMIZER
@@ -68,9 +69,8 @@ class ANET:
         model.add(Dense(output_dim, activation=softmax))
 
         model.compile(
-            optimizer=(self.__optimizer(learning_rate=self.__learning_rate)
-                       if self.__learning_rate is not None else self.__optimizer()),
-            loss=parameters.ANET_LOSS_FUNCTION
+            optimizer=(self.__optimizer(learning_rate=self.__learning_rate) if self.__learning_rate is not None else self.__optimizer()),
+            loss=self.__loss_function
         )
         model.summary()
         return model

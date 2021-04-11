@@ -70,12 +70,12 @@ class ReinforcementLearner:
         self.__ANET.fit(self.__replay_buffer[random_rows])
 
     def __add_to_replay_buffer(self, root_state: Tuple[int, ...], target_distribution: Tuple[float, ...]):
+        training_instance = np.array([root_state + target_distribution], dtype=np.float64)
         if self.__buffer_insertion_index < self.__replay_buffer_size:
-            self.__replay_buffer = np.append(self.__replay_buffer, np.array(
-                [root_state + target_distribution]), axis=0)  # type: ignore
+            self.__replay_buffer = np.append(self.__replay_buffer, training_instance, axis=0)
         else:
             i = self.__buffer_insertion_index % self.__replay_buffer_size
-            self.__replay_buffer[i] = np.array([root_state + target_distribution])  # type: ignore
+            self.__replay_buffer[i] = training_instance  # type: ignore
         self.__buffer_insertion_index += 1
 
     def __sample_replay_buffer(self):
