@@ -90,7 +90,7 @@ class ANET:
         self.__name = 'Agent-e' + model_name.replace('.h5', '')
         self.__model = tf.keras.models.load_model(f'models/{model_name}', compile=False)  # type: ignore
 
-    def choose_action(self, state: Tuple[int, ...], valid_actions: Tuple[int, ...]) -> int:
+    def choose_epsilon_greedy(self, state: Tuple[int, ...], valid_actions: Tuple[int, ...]) -> int:
         """Epsilon-greedy action selection function."""
         if random.random() < self.__epsilon:
             return self.choose_uniform(valid_actions)

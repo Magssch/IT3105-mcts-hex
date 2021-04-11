@@ -1,6 +1,7 @@
 import random
 from time import time
 from typing import Tuple
+from functools import partial
 
 import numpy as np
 
@@ -51,7 +52,7 @@ class ReinforcementLearner:
 
             start_time = time()
             while time() - start_time < self.__simulation_time_out:
-                monte_carlo_tree.do_one_simulation(self.__ANET.choose_action, monte_carlo_game)
+                monte_carlo_tree.do_one_simulation(self.__ANET.choose_epsilon_greedy, monte_carlo_game)
                 monte_carlo_game.reset(root_state)
 
             target_distribution = monte_carlo_tree.get_normalized_distribution()
@@ -102,10 +103,10 @@ class ReinforcementLearner:
 
         if parameters.VISUALIZE_GAMES:
             print('Showing one episode with the greedy strategy.')
-            ReinforcementLearner.run_one_game(self.__ANET, self.__ANET, True)
+            ReinforcementLearner.run_one_game(self.__ANET, self.__ANET, ANET.choose_greedy, True)
 
     @staticmethod
-    def run_one_game(player_1: ANET, player_2: ANET, visualize=False) -> int:
+    def run_one_game(player_1: ANET, player_2: ANET, action_function, visualize: bool) -> int:
         world = SimulatedWorldFactory.get_simulated_world()
         current_state = world.reset()
 
@@ -118,14 +119,15 @@ class ReinforcementLearner:
         while not world.is_final_state():
             legal_actions = world.get_legal_actions()
 
-            action = players[i].choose_softmax(current_state, legal_actions)
+            # action = players[i].action_function(current_state, legal_actions)
+            action = partial(action_function, players[i])(current_state, legal_actions)
             current_state, winner = world.step(action)
 
-            # Flip starting player for next round
+            # Alternating players
             i = (i + 1) % 2
 
             if visualize and parameters.GAME_TYPE == Game.Hex:
                 Visualize.draw_board(current_state, winner, str(player_1), str(player_2))
 
-        print(f'Player {winner} has won the game.')
+        print(f'Player {winner} won the game.')
         return winner
