@@ -125,7 +125,7 @@ class ReinforcementLearner:
             i = (i + 1) % 2
 
             if visualize and parameters.GAME_TYPE == Game.Hex:
-                Visualize.draw_board(current_state, winner)
+                Visualize.draw_board(current_state, winner, str(player_1), str(player_2))
 
         print(f'Player {winner} has won the game.')
         return winner

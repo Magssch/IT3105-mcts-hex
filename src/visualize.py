@@ -1,4 +1,3 @@
-from os import walk
 from typing import List
 
 import matplotlib.pyplot as plt
@@ -66,7 +65,7 @@ class Visualize:
                         Visualize.__graph, (x, y), neighbor_node)
 
     @staticmethod
-    def draw_board(state, winner: int, positions=None) -> None:
+    def draw_board(state, winner: int, player_1: str, player_2: str, positions=None) -> None:
         board = state[1:]
 
         # List of all node positions currently filled
@@ -80,39 +79,31 @@ class Visualize:
         for node in legal_positions:
             positions[node] = (node[0] - node[1], 2 * size - node[1] - node[0])
 
+        plt.axis('off')
+        nx.draw_networkx_nodes(Visualize.__graph, pos=positions, nodelist=empty_nodes, node_color='white')
+        nx.draw_networkx_edges(Visualize.__graph, pos=positions, alpha=0.5, width=1, edge_color='grey')
         if winner == 1:
-            nx.draw_networkx_nodes(Visualize.__graph, pos=positions, nodelist=empty_nodes, node_color='white')
-            nx.draw_networkx_nodes(Visualize.__graph, pos=positions, nodelist=filled_player_1, node_color='black')
-            nx.draw_networkx_nodes(Visualize.__graph, pos=positions, alpha=0.5, nodelist=filled_player_2, node_color='grey')
-            nx.draw_networkx_edges(Visualize.__graph, pos=positions, alpha=0.5, width=1, edge_color='grey')
-
-            plt.axis('off')
+            nx.draw_networkx_nodes(Visualize.__graph, pos=positions, nodelist=filled_player_1, node_color='black', label=player_1)
+            nx.draw_networkx_nodes(Visualize.__graph, pos=positions, alpha=0.5, nodelist=filled_player_2, node_color='grey', label=player_2)
+            plt.legend(prop={'size': 12})
             plt.draw()
-            plt.pause(Visualize.__frame_delay*3)
-            plt.clf()
+            plt.pause(Visualize.__frame_delay * 5)
 
         elif winner == 2:
-            nx.draw_networkx_nodes(Visualize.__graph, pos=positions, nodelist=empty_nodes, node_color='white')
-            nx.draw_networkx_nodes(Visualize.__graph, pos=positions, alpha=0.5, nodelist=filled_player_1, node_color='grey')
-            nx.draw_networkx_nodes(Visualize.__graph, pos=positions, nodelist=filled_player_2, node_color='red')
-            nx.draw_networkx_edges(Visualize.__graph, pos=positions, alpha=0.5, width=1, edge_color='grey')
-
-            plt.axis('off')
+            nx.draw_networkx_nodes(Visualize.__graph, pos=positions, alpha=0.5, nodelist=filled_player_1, node_color='grey', label=player_1)
+            nx.draw_networkx_nodes(Visualize.__graph, pos=positions, nodelist=filled_player_2, node_color='red', label=player_2)
+            plt.legend(prop={'size': 12})
             plt.draw()
-            plt.pause(Visualize.__frame_delay*3)
-            plt.clf()
+            plt.pause(Visualize.__frame_delay * 5)
 
         else:
-            nx.draw_networkx_nodes(Visualize.__graph, pos=positions, nodelist=empty_nodes, node_color='white')
-            nx.draw_networkx_nodes(Visualize.__graph, pos=positions, nodelist=filled_player_1, node_color='black')
-            nx.draw_networkx_nodes(Visualize.__graph, pos=positions, nodelist=filled_player_2, node_color='red')
-            nx.draw_networkx_edges(Visualize.__graph, pos=positions, alpha=0.5, width=1, edge_color='grey')
-
-            plt.axis('off')
+            nx.draw_networkx_nodes(Visualize.__graph, pos=positions, nodelist=filled_player_1, node_color='black', label=player_1)
+            nx.draw_networkx_nodes(Visualize.__graph, pos=positions, nodelist=filled_player_2, node_color='red', label=player_2)
+            plt.legend(prop={'size': 12})
             plt.draw()
             plt.pause(Visualize.__frame_delay)
-            plt.clf()
 
+        plt.clf()
 
     @staticmethod
     def plot_loss(loss_history: List[int]):
