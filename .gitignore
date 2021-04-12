@@ -134,5 +134,3 @@ dmypy.json
 # Custom
 models/*
 !models/.gitkeep
-parameters/*
-!parameters/.gitkeep
