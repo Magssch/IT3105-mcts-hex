@@ -18,11 +18,10 @@ class MCTS:
         self.root.parent = None
 
     def get_normalized_distribution(self) -> Tuple[float, ...]:
-        # print(list(map(lambda node: node.visits, self.root.children.values())), "/", self.root.visits - 1)
         distribution = []
         for action in range(self.action_space):
             if action in self.root.children:
-                distribution.append(float(self.root.children[action].visits) / float(self.root.visits - 1))
+                distribution.append(float(self.root.children[action].visits) / float(self.root.visits))
             else:
                 distribution.append(0.0)
         return tuple(distribution)
@@ -32,13 +31,11 @@ class MCTS:
         current_node = self.root
         while current_node.is_not_leaf:
             action = current_node.tree_policy()
-            # print('UCT values', list(map(lambda key: (key, self.UCT(current_node.children[key])), current_node.children.keys())))
-            # print(f'Node chosen {action}. For player {current_node.player_id}')
             world.step(action)
             current_node = current_node.children[action]
 
-        # Node expansion
-        if not world.is_final_state() and current_node.visits != 0:
+        # Node expansion. Always expand the root
+        if not world.is_final_state() and (current_node.visits != 0 or current_node.parent is None):
             for action, legal in enumerate(world.get_legal_actions()):
                 if bool(legal):
                     current_node.add_node(action, world.generate_state(action))
