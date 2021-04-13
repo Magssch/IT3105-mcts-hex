@@ -9,7 +9,7 @@ VISUALIZE_GAMES = False
 FRAME_DELAY = 0.4
 
 # RL parameters
-EPISODES = 200
+EPISODES = 100
 REPLAY_BUFFER_SIZE = 1024
 
 # MCTS parameters
