@@ -123,9 +123,17 @@ class BasicClientActorAbs(ABC):
             # Send user response to server.
             self.ssl_sock.send(bytes(usr_in, 'utf8'))
 
-    def show_state(self,state):
+    def show_state(self, state):
+        if state in ['Series start', 'Game start', 'Game end']:
+            return print(state)
+
+        player_id, *board = state[1:-1].replace(', ', '')
+        print(f'Player ID: {player_id}')
         if self.verbose:
-            print(state)
+            board_size = int(math.sqrt(len(board)))
+            for i in range(board_size):
+                print("".join(cell + " " for cell in board[i*board_size:(i+1)*board_size]))
+        print("")
 
     def play_tournament(self):
         """

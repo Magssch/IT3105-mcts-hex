@@ -2,7 +2,6 @@ from keras.activations import linear, relu, sigmoid, tanh  # noqa
 from keras.losses import kl_divergence  # noqa
 from keras.optimizers import SGD, Adagrad, Adam, RMSprop  # noqa
 
-from ANET import ANET, deepnet_cross_entropy  # noqa
 from game import Game
 
 VISUALIZE_GAMES = False
@@ -37,4 +36,3 @@ ANET_BATCH_SIZE = 64
 # TOPP parameters
 ANETS_TO_BE_CACHED = 11
 NUMBER_OF_GAMES = 10
-ACTION_SELECTION = ANET.choose_greedy  # ANET.choose_softmax, ANET.choose_greedy, ANET.choose_epsilon_greedy

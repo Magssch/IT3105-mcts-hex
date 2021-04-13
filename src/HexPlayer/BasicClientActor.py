@@ -1,9 +1,7 @@
-import glob
-
 from ANET import ANET
 from world.hex import Hex
 
-from .BasicClientActorAbs import BasicClientActorAbs
+from HexPlayer.BasicClientActorAbs import BasicClientActorAbs
 
 
 class BasicClientActor(BasicClientActorAbs):
@@ -11,9 +9,8 @@ class BasicClientActor(BasicClientActorAbs):
     def __init__(self, IP_address=None, verbose=True):
         self.series_id = -1
         BasicClientActorAbs.__init__(self, IP_address, verbose=verbose)
-        model_file = glob.glob('./*.h5')[0]
-        print(model_file)
-        self.ANET = ANET(model_file)
+        model_file = 'src/HexPlayer/model.h5'
+        self.ANET = ANET(model_file, '.')
 
     def handle_get_action(self, state):
         """
@@ -28,7 +25,7 @@ class BasicClientActor(BasicClientActorAbs):
 
         valid_actions = Hex.get_valid_actions(state)
         next_move = self.ANET.choose_greedy(state, valid_actions)
-        row, column = Hex.index_to_coordinates(next_move, len(state[1:]))
+        row, column = Hex.index_to_coordinates(next_move, 6)
 
         return (row, column)
 
@@ -81,7 +78,7 @@ class BasicClientActor(BasicClientActorAbs):
         #
         ##############################
         print("Game over, these are the stats:")
-        print('Winner: ' + str(winner))
+        print('Winner: ' + str(winner) + '. We ' + ('won' if winner == self.series_id else 'lost'))
         print('End state: ' + str(end_state))
 
     def handle_series_over(self, stats):

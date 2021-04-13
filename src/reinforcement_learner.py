@@ -1,5 +1,4 @@
 import random
-from functools import partial
 from time import time
 from typing import Tuple
 
@@ -103,10 +102,10 @@ class ReinforcementLearner:
 
         if parameters.VISUALIZE_GAMES:
             print('Showing one episode with the greedy strategy.')
-            ReinforcementLearner.run_one_game(self.__ANET, self.__ANET, ANET.choose_greedy, True)
+            ReinforcementLearner.run_one_game(self.__ANET, self.__ANET, True)
 
     @staticmethod
-    def run_one_game(player_1: ANET, player_2: ANET, action_function, visualize: bool) -> int:
+    def run_one_game(player_1: ANET, player_2: ANET, visualize: bool) -> int:
         world = SimulatedWorldFactory.get_simulated_world()
         current_state = world.reset()
 
@@ -120,7 +119,7 @@ class ReinforcementLearner:
             legal_actions = world.get_legal_actions()
 
             # action = players[i].action_function(current_state, legal_actions)
-            action = partial(action_function, players[i])(current_state, legal_actions)
+            action = players[i].choose_greedy(current_state, legal_actions)
             current_state, winner = world.step(action)
 
             # Alternating players

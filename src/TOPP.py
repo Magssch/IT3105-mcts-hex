@@ -14,7 +14,6 @@ class TOPP:
         self.number_of_games = parameters.NUMBER_OF_GAMES
         self.visualize_game = parameters.VISUALIZE_GAMES
         self.number_of_games_per_agent = self.number_of_games * (self.number_of_agents - 1)
-        self.action_function = parameters.ACTION_SELECTION
 
     @staticmethod
     def get_agents():
@@ -36,7 +35,7 @@ class TOPP:
 
                 for game in range(self.number_of_games):
                     print(f'p1={player_1} is playing against p2={player_2}. Round {game + 1}')
-                    winner = ReinforcementLearner.run_one_game(player_1, player_2, self.action_function, self.visualize_game)
+                    winner = ReinforcementLearner.run_one_game(player_1, player_2, self.visualize_game)
                     winner = player_1 if winner == 1 else player_2
                     win_statistics[winner] += 1
                     player_1, player_2 = player_2, player_1  # change the starting player

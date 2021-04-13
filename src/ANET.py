@@ -38,7 +38,7 @@ class ANET:
         Trains the model on the dataset supervised learning style.
     """
 
-    def __init__(self, model_name: Optional[str] = None) -> None:
+    def __init__(self, model_name: Optional[str] = None, directory: str = 'models') -> None:
         self.__epsilon = parameters.ANET_EPSILON
         self.__epsilon_decay_rate = parameters.ANET_EPSILON_DECAY
 
@@ -50,7 +50,7 @@ class ANET:
 
             self.__model: Sequential = self.__build_model()
         else:
-            self.load(model_name)
+            self.load(model_name, directory)
 
         self.__loss_history = []
         self.__epsilon_history = []
@@ -86,9 +86,9 @@ class ANET:
     def save(self, model_name: str) -> None:
         self.__model.save(f'models/{model_name}')
 
-    def load(self, model_name: str) -> None:
+    def load(self, model_name: str, directory: str) -> None:
         self.__name = 'Agent-e' + model_name.replace('.h5', '')
-        self.__model = tf.keras.models.load_model(f'models/{model_name}', compile=False)  # type: ignore
+        self.__model = tf.keras.models.load_model(f'{directory}/{model_name}', compile=False)  # type: ignore
 
     def choose_epsilon_greedy(self, state: Tuple[int, ...], valid_actions: Tuple[int, ...]) -> int:
         """Epsilon-greedy action selection function."""
