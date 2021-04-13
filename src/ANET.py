@@ -42,12 +42,12 @@ class ANET:
         self.__epsilon = parameters.ANET_EPSILON
         self.__epsilon_decay_rate = parameters.ANET_EPSILON_DECAY
 
-        self.__loss_function = parameters.ANET_LOSS_FUNCTION
-        self.__learning_rate = parameters.ANET_LEARNING_RATE
-        self.__activation_function = parameters.ANET_ACTIVATION_FUNCTION
-        self.__optimizer = parameters.ANET_OPTIMIZER
-
         if model_name is None:
+            self.__loss_function = parameters.ANET_LOSS_FUNCTION
+            self.__learning_rate = parameters.ANET_LEARNING_RATE
+            self.__activation_function = parameters.ANET_ACTIVATION_FUNCTION
+            self.__optimizer = parameters.ANET_OPTIMIZER
+
             self.__model: Sequential = self.__build_model()
         else:
             self.load(model_name)

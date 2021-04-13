@@ -1,7 +1,7 @@
 import random
+from functools import partial
 from time import time
 from typing import Tuple
-from functools import partial
 
 import numpy as np
 

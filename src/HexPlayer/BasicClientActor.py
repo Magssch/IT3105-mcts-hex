@@ -1,4 +1,7 @@
-import math
+import glob
+
+from ANET import ANET
+from world.hex import Hex
 
 from .BasicClientActorAbs import BasicClientActorAbs
 
@@ -8,6 +11,9 @@ class BasicClientActor(BasicClientActorAbs):
     def __init__(self, IP_address=None, verbose=True):
         self.series_id = -1
         BasicClientActorAbs.__init__(self, IP_address, verbose=verbose)
+        model_file = glob.glob('./*.h5')[0]
+        print(model_file)
+        self.ANET = ANET(model_file)
 
     def handle_get_action(self, state):
         """
@@ -20,17 +26,11 @@ class BasicClientActor(BasicClientActorAbs):
         :return: Your actor's selected action as a tuple (row, column)
         """
 
-        # This is an example player who picks random moves. REMOVE THIS WHEN YOU ADD YOUR OWN CODE !!
-        next_move = tuple(self.pick_random_free_cell(
-            state, size=int(math.sqrt(len(state)-1))))
-        #############################
-        #
-        #
-        # YOUR CODE HERE
-        #
-        # next_move = ???
-        ##############################
-        return next_move
+        valid_actions = Hex.get_valid_actions(state)
+        next_move = self.ANET.choose_greedy(state, valid_actions)
+        row, column = Hex.index_to_coordinates(next_move, len(state[1:]))
+
+        return (row, column)
 
     def handle_series_start(self, unique_id, series_id, player_map, num_games, game_params):
         """
@@ -41,7 +41,6 @@ class BasicClientActor(BasicClientActorAbs):
         :param num_games - number of games to be played in the series
         :param game_params - important game parameters.  For Hex = list with one item = board size (e.g. 5)
         :return
-
         """
         self.series_id = series_id
         #############################

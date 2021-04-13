@@ -55,6 +55,10 @@ class Hex(SimulatedWorld):
     def get_legal_actions(self) -> Tuple[int, ...]:
         return tuple(1 if i == 0 else 0 for i in self.__board)
 
+    @staticmethod
+    def get_valid_actions(state: Tuple[int, ...]) -> Tuple[int, ...]:
+        return tuple(1 if i == 0 else 0 for i in state[1:])
+
     def generate_child_states(self) -> Tuple[Tuple[int, ...], ...]:
         child_states = []
         for i in self.get_legal_actions():
@@ -128,6 +132,10 @@ class Hex(SimulatedWorld):
 
     def __coordinates_to_index(self, coordinates: Tuple[int, int]) -> int:
         return (coordinates[0] * self.__size) + coordinates[1]
+
+    @staticmethod
+    def index_to_coordinates(index: int, size: int) -> Tuple[int, int]:
+        return index // size, index % size
 
     def __get_filled_neighbors(self, index: int, player_id: int) -> Set[int]:
         def is_cell_neighbor(cell: int) -> bool:
