@@ -9,8 +9,8 @@ FRAME_DELAY = 0.5
 RUN_TRAINING = True
 
 # RL parameters
-EPISODES = 100
-REPLAY_BUFFER_SIZE = 1024
+EPISODES = 200
+REPLAY_BUFFER_SIZE = 512
 
 # MCTS parameters
 SIMULATION_TIME_OUT = 0.4  # s
@@ -19,7 +19,7 @@ UCT_C = 1  # "theoretically 1"
 # Simulated World
 GAME_TYPE = Game.Hex
 LEDGE_BOARD = (0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 2, 0, 0, 1, 1, 1)  # (0, 2, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1)
-SIZE = 6 if GAME_TYPE == Game.Hex else len(LEDGE_BOARD)  # 3 <= k <= 10
+SIZE = 5 if GAME_TYPE == Game.Hex else len(LEDGE_BOARD)  # 3 <= k <= 10
 STATE_SIZE = 1 + (SIZE ** 2 if GAME_TYPE == Game.Hex else SIZE)
 NUMBER_OF_ACTIONS = SIZE ** 2 if GAME_TYPE == Game.Hex else int((SIZE ** 2 - SIZE) / 2) + 1
 
