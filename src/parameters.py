@@ -6,16 +6,11 @@ from game import Game
 
 VISUALIZE_GAMES = False
 FRAME_DELAY = 0.5
-RUN_TRAINING = True
+RUN_TRAINING = False
 
 # RL parameters
-<<<<<<< HEAD
-EPISODES = 200
-REPLAY_BUFFER_SIZE = 512
-=======
 EPISODES = 300
 REPLAY_BUFFER_SIZE = 1024
->>>>>>> refs/remotes/origin/main
 
 # MCTS parameters
 SIMULATION_TIME_OUT = 0.5  # s
