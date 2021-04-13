@@ -16,7 +16,7 @@ class BasicClientActor(BasicClientActorAbs):
     def __init__(self, IP_address=None, verbose=True):
         self.series_id = -1
         BasicClientActorAbs.__init__(self, IP_address, verbose=verbose)
-        model_file = 'src/HexPlayer/model.h5'
+        model_file = 'src/HexPlayer/' + input("Modellnavn (må ligge i src/HexPlayer/): ") + '.h5'
         self.ANET = ANET(model_file, '.')
 
     def handle_get_action(self, state):
