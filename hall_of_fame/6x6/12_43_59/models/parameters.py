@@ -9,11 +9,11 @@ FRAME_DELAY = 0.5
 RUN_TRAINING = True
 
 # RL parameters
-EPISODES = 300
+EPISODES = 100
 REPLAY_BUFFER_SIZE = 1024
 
 # MCTS parameters
-SIMULATION_TIME_OUT = 0.5  # s
+SIMULATION_TIME_OUT = 0.1  # s
 UCT_C = 1  # "theoretically 1"
 
 # Simulated World

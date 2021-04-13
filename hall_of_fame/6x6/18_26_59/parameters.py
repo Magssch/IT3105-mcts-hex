@@ -9,7 +9,7 @@ FRAME_DELAY = 0.5
 RUN_TRAINING = True
 
 # RL parameters
-EPISODES = 300
+EPISODES = 100
 REPLAY_BUFFER_SIZE = 1024
 
 # MCTS parameters
