@@ -30,7 +30,7 @@ class MCTS:
         # Tree search
         current_node = self.root
         while current_node.is_not_leaf:
-            action = current_node.tree_policy()
+            action = current_node.tree_policy()  # returns action to child node with highest UCT value
             world.step(action)
             current_node = current_node.children[action]
 
@@ -46,7 +46,7 @@ class MCTS:
         while not world.is_final_state():
             legal_actions = world.get_legal_actions()
             action = default_policy(current_state, legal_actions)
-            current_state, winner = world.step(action)
+            current_state, _ = world.step(action)
 
         # Backpropagation
         while current_node is not None:

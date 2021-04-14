@@ -23,9 +23,9 @@ class ReinforcementLearner:
 
     Methods
     -------
-    run():
+    run() -> None:
         Runs all episodes with pivotal parameters
-    run_one_game(player_1: ANET, player_2: ANET, visualize=False):
+    run_one_game(player_1: ANET, player_2: ANET, visualize=False) -> None:
         Runs excatly one game with the provided players.
     """
 
@@ -56,7 +56,6 @@ class ReinforcementLearner:
 
             target_distribution = monte_carlo_tree.get_normalized_distribution()
             self.__add_to_replay_buffer(root_state, target_distribution)
-            # print(target_distribution)
 
             legal_actions = self.__actual_game.get_legal_actions()
             action = self.__ANET.choose_greedy(root_state, legal_actions)
@@ -88,7 +87,7 @@ class ReinforcementLearner:
         Runs all episodes with pivotal parameters.
         Visualizes one round at the end.
         """
-        self.__ANET.save('0.h5')  # Save the untrained ANET before episode 1
+        self.__ANET.save('0.h5')  # Save the untrained ANET prior to episode 1
         for episode in range(1, self.__episodes + 1):
             print('\nEpisode:', episode)
             self.__run_one_episode()
@@ -106,6 +105,9 @@ class ReinforcementLearner:
 
     @staticmethod
     def run_one_game(player_1: ANET, player_2: ANET, visualize: bool) -> int:
+        """
+        Runs excatly one game with the provided players.
+        """
         world = SimulatedWorldFactory.get_simulated_world()
         current_state = world.reset()
 
@@ -118,7 +120,6 @@ class ReinforcementLearner:
         while not world.is_final_state():
             legal_actions = world.get_legal_actions()
 
-            # action = players[i].action_function(current_state, legal_actions)
             action = players[i].choose_greedy(current_state, legal_actions)
             current_state, winner = world.step(action)
 
