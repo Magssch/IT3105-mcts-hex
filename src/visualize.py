@@ -140,7 +140,7 @@ class Visualize:
         plt.ylabel('wins')
         agents = statistics.keys()
         wins = statistics.values()
-        plt.bar(list(map(str, agents)), wins)
+        plt.bar(agents, wins)
 
         plt.tight_layout()
         plt.savefig('plots/TOPP_results.png')

@@ -27,7 +27,7 @@ class TOPP:
         return agents
 
     def run(self):
-        win_statistics = {agent: 0 for agent in self.agents}
+        win_statistics = {str(agent): 0 for agent in self.agents}
         for i in range(self.number_of_agents - 1):
             player_1 = self.agents[i]
             for j in range(i + 1, self.number_of_agents):
@@ -36,7 +36,7 @@ class TOPP:
                 for game in range(self.number_of_games):
                     print(f'p1={player_1} is playing against p2={player_2}. Round {game + 1}')
                     winner = ReinforcementLearner.run_one_game(player_1, player_2, self.visualize_game)
-                    winner = player_1 if winner == 1 else player_2
+                    winner = str(player_1) if winner == 1 else str(player_2)
                     win_statistics[winner] += 1
                     player_1, player_2 = player_2, player_1  # change the starting player
 
@@ -45,4 +45,4 @@ class TOPP:
     def plot_win_statistics(self, statisitcs):
         Visualize.plot_win_statistics(statisitcs)
         for agent, wins in statisitcs.items():
-            print(f'{str(agent):>10} won {wins}/{self.number_of_games_per_agent} games')
+            print(f'{agent:>10} won {wins}/{self.number_of_games_per_agent} games')

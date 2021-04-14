@@ -4,17 +4,7 @@ from collections import deque
 from typing import Optional, Set, Tuple
 
 import parameters
-# from visualize import Visualize
 from world.simulated_world import SimulatedWorld
-
-# class Peg:
-
-#     def __init__(self) -> None:
-#         self.connect_pegs = set(self)
-
-#     def connect(self, otherPeg: Peg):
-#         self.connect_pegs.union(otherPeg.connect_pegs)
-#         return self.connect_pegs
 
 
 class Hex(SimulatedWorld):
@@ -23,9 +13,6 @@ class Hex(SimulatedWorld):
         1: 2,
         2: 1,
     }
-
-    def __str__(self) -> str:
-        return str(self.__get_state())
 
     def __init__(self, state: Optional[Tuple[int, ...]] = None):
         self.__size: int = parameters.SIZE
@@ -52,18 +39,17 @@ class Hex(SimulatedWorld):
                     self.__modified_list[player_id][self.__player_axis(player_id, action)] = True
         return self.__get_state()
 
-    def get_legal_actions(self) -> Tuple[int, ...]:
-        return tuple(1 if i == 0 else 0 for i in self.__board)
+    @staticmethod
+    def index_to_coordinates(index: int, size: int) -> Tuple[int, int]:
+        return index // size, index % size
 
+    # Used by BasicClientActor
     @staticmethod
     def get_valid_actions(state: Tuple[int, ...]) -> Tuple[int, ...]:
         return tuple(1 if i == 0 else 0 for i in state[1:])
 
-    def generate_child_states(self) -> Tuple[Tuple[int, ...], ...]:
-        child_states = []
-        for i in self.get_legal_actions():
-            child_states += self.generate_state(i)
-        return tuple(child_states)
+    def get_legal_actions(self) -> Tuple[int, ...]:
+        return tuple(1 if i == 0 else 0 for i in self.__board)
 
     def generate_state(self, action: int) -> Tuple[int, ...]:
         next_board = list(self.__board)
@@ -77,7 +63,6 @@ class Hex(SimulatedWorld):
         """
         Checks whether the opposite player has won the game.
         """
-
         opposite_player = Hex.opposite_player[self.__player_id]
 
         if sum(self.__modified_list[opposite_player]) < self.__size:  # Does the player have the sufficient amount of pegs along its axis?
@@ -130,13 +115,6 @@ class Hex(SimulatedWorld):
             return action // self.__size
         return action % self.__size
 
-    def __coordinates_to_index(self, coordinates: Tuple[int, int]) -> int:
-        return (coordinates[0] * self.__size) + coordinates[1]
-
-    @staticmethod
-    def index_to_coordinates(index: int, size: int) -> Tuple[int, int]:
-        return index // size, index % size
-
     def __get_filled_neighbors(self, index: int, player_id: int) -> Set[int]:
         def is_cell_neighbor(cell: int) -> bool:
             if not (0 <= cell < self.__length):
@@ -158,3 +136,6 @@ class Hex(SimulatedWorld):
             index - self.__size + 1,
             index + self.__size - 1
         }
+
+    def __str__(self) -> str:
+        return str(self.__get_state())

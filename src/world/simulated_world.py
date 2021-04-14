@@ -27,7 +27,3 @@ class SimulatedWorld(ABC):
     @abstractmethod
     def generate_state(self, action: int) -> Tuple[int, ...]:
         raise NotImplementedError
-
-    @abstractmethod
-    def generate_child_states(self) -> Tuple[Tuple[int, ...]]:
-        raise NotImplementedError

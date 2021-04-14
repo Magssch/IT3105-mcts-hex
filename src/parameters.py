@@ -6,7 +6,7 @@ from game import Game
 
 VISUALIZE_GAMES = False
 FRAME_DELAY = 0.4
-RUN_TRAINING = True
+RUN_TRAINING = False
 
 # RL parameters
 EPISODES = 200

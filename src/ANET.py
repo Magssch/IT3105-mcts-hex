@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import random
 from typing import Optional, Tuple
 
@@ -26,7 +28,7 @@ class ANET:
     -------
     save(model_name: str) -> None:
         Saves model with model_name to t 'models/' for later use in TOPP play.
-    load(model_name: str) -> None:
+    load(self, model_name: str, directory: str) -> None:
         Loads model with model_name from 'models/' for use in TOPP play.
     choose_uniform(valid_actions: Tuple[int, ...]) -> int:
         Chooses a random action from valid_actions
@@ -56,7 +58,9 @@ class ANET:
         self.__epsilon_history = []
 
     def __build_model(self) -> Sequential:
-        """Builds a neural network model with the provided dimensions and learning rate"""
+        """
+        Builds a neural network model with the provided dimensions and learning rate
+        """
         self.__name = 'Training model'
         input_dim, *hidden_dims, output_dim = parameters.ANET_DIMENSIONS
 
@@ -106,12 +110,6 @@ class ANET:
         action_probabilities = action_probabilities.flatten()
         action_probabilities /= np.sum(action_probabilities)  # normalize probability distribution
         return np.argmax(action_probabilities)
-
-    def choose_softmax(self, state: Tuple[int, ...], valid_actions: Tuple[int, ...]) -> int:
-        action_probabilities = self.__model(tf.convert_to_tensor([state])).numpy().flatten()  # type: ignore
-        action_probabilities = action_probabilities * np.array(valid_actions)
-        action_probabilities /= np.sum(action_probabilities)  # normalize
-        return np.random.choice(len(valid_actions), 1, p=list(action_probabilities))[0]  # type: ignore
 
     def fit(self, batch: np.ndarray) -> None:
         X, Y = batch[:, :parameters.STATE_SIZE], batch[:, parameters.STATE_SIZE:]

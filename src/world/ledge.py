@@ -48,10 +48,6 @@ class Ledge(SimulatedWorld):
             legal_actions.append(int(self.__is_legal_action(self.__board, self.index_to_tuple(action))))
         return tuple(legal_actions)
 
-    def generate_child_states(self) -> Tuple[Tuple[int, ...], ...]:
-        possible_actions = self.get_legal_actions()
-        return tuple(self.generate_state(action) for action in possible_actions)
-
     def __get_state(self) -> Tuple[int, ...]:
         return (self.__player_id, *self.__board)
 
