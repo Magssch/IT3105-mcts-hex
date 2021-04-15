@@ -9,11 +9,11 @@ FRAME_DELAY = 0.5
 RUN_TRAINING = True
 
 # RL parameters
-EPISODES = 300
+EPISODES = 200
 REPLAY_BUFFER_SIZE = 1024
 
 # MCTS parameters
-SIMULATION_TIME_OUT = 2  # s
+SIMULATION_TIME_OUT = 1  # s
 UCT_C = 1  # "theoretically 1"
 
 # Simulated World
@@ -28,10 +28,10 @@ ANET_EPSILON = 0
 ANET_EPSILON_DECAY = 1
 ANET_LEARNING_RATE = 0.005
 ANET_LOSS_FUNCTION = kl_divergence  # deepnet_cross_entropy, kl_divergence
-ANET_ACTIVATION_FUNCTION = relu  # linear, relu, sigmoid, or tanh
-ANET_OPTIMIZER = Adam  # SGD, Adagrad, Adam, or RMSprop
-ANET_DIMENSIONS = (STATE_SIZE, 37, 37, 37, NUMBER_OF_ACTIONS)
-ANET_BATCH_SIZE = 128
+ANET_ACTIVATION_FUNCTION = sigmoid  # linear, relu, sigmoid, or tanh
+ANET_OPTIMIZER = SGD  # SGD, Adagrad, Adam, or RMSprop
+ANET_DIMENSIONS = (STATE_SIZE, 10, 10, NUMBER_OF_ACTIONS)
+ANET_BATCH_SIZE = 64
 
 # TOPP parameters
 ANETS_TO_BE_CACHED = 11
