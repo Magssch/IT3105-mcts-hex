@@ -6,10 +6,10 @@ from game import Game
 
 VISUALIZE_GAMES = False
 FRAME_DELAY = 0.4
-RUN_TRAINING = False
+RUN_TRAINING = True
 
 # RL parameters
-EPISODES = 200
+EPISODES = 100
 REPLAY_BUFFER_SIZE = 1024
 
 # MCTS parameters
@@ -19,7 +19,7 @@ UCT_C = 1  # "theoretically 1"
 # Simulated World
 GAME_TYPE = Game.Hex
 LEDGE_BOARD = (0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 2, 0, 0, 1, 1, 1)  # (0, 2, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1)
-SIZE = 4 if GAME_TYPE == Game.Hex else len(LEDGE_BOARD)  # 3 <= k <= 10
+SIZE = 6 if GAME_TYPE == Game.Hex else len(LEDGE_BOARD)  # 3 <= k <= 10
 STATE_SIZE = 1 + (SIZE ** 2 if GAME_TYPE == Game.Hex else SIZE)
 NUMBER_OF_ACTIONS = SIZE ** 2 if GAME_TYPE == Game.Hex else int((SIZE ** 2 - SIZE) / 2) + 1
 
@@ -30,7 +30,7 @@ ANET_LEARNING_RATE = 0.005
 ANET_LOSS_FUNCTION = kl_divergence  # deepnet_cross_entropy, kl_divergence
 ANET_ACTIVATION_FUNCTION = sigmoid  # linear, relu, sigmoid, or tanh
 ANET_OPTIMIZER = Adagrad  # SGD, Adagrad, Adam, or RMSprop
-ANET_DIMENSIONS = (STATE_SIZE, 10, 10, NUMBER_OF_ACTIONS)
+ANET_DIMENSIONS = (STATE_SIZE, 37, 37, NUMBER_OF_ACTIONS)
 ANET_BATCH_SIZE = 64
 
 # TOPP parameters

@@ -15,13 +15,14 @@ class TreeNode:
 
     def __init__(self, state: Tuple[int, ...], parent: Optional[TreeNode] = None) -> None:
         self.state = state
+        self.parent = parent
+        self.children: Dict[int, TreeNode] = {}
 
         self.score = 0
         self.visits = 0
 
         self.c = -parameters.UCT_C if state[0] == 1 else parameters.UCT_C
-        self.parent = parent
-        self.children: Dict[int, TreeNode] = {}
+        self.policy_function = max if self.state[0] == 1 else min
 
     @property
     def UCT(self) -> float:
@@ -32,8 +33,7 @@ class TreeNode:
         return exploitation + exploration
 
     def tree_policy(self) -> int:
-        policy_function = max if self.state[0] == 1 else min
-        return policy_function(self.children.keys(), key=lambda key: self.children[key].UCT)
+        return self.policy_function(self.children.keys(), key=lambda key: self.children[key].UCT)
 
     @property
     def is_not_leaf(self) -> bool:

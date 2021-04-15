@@ -57,8 +57,7 @@ class ReinforcementLearner:
             target_distribution = monte_carlo_tree.get_normalized_distribution()
             self.__add_to_replay_buffer(root_state, target_distribution)
 
-            legal_actions = self.__actual_game.get_legal_actions()
-            action = self.__ANET.choose_greedy(root_state, legal_actions)
+            action = monte_carlo_tree.root.tree_policy()
             next_state, _ = self.__actual_game.step(action)
 
             monte_carlo_tree.update_root(action)
