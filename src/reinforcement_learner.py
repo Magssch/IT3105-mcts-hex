@@ -35,6 +35,7 @@ class ReinforcementLearner:
         self.__ANET = ANET()
 
         self.__episodes = parameters.EPISODES
+        self.__min_number_of_roullouts = parameters.MIN_NUMBER_OF_ROLLOUTS
         self.__simulation_time_out = parameters.SIMULATION_TIME_OUT
         self.__caching_interval = self.__episodes // (parameters.ANETS_TO_BE_CACHED - 1)
         self.__batch_size = parameters.ANET_BATCH_SIZE
@@ -49,10 +50,13 @@ class ReinforcementLearner:
         while not self.__actual_game.is_final_state():
             monte_carlo_game = SimulatedWorldFactory.get_simulated_world(root_state)
 
+            number_of_rollouts = 0
             start_time = time()
-            while time() - start_time < self.__simulation_time_out:
+            while time() - start_time < self.__simulation_time_out or number_of_rollouts < self.__min_number_of_roullouts:
                 monte_carlo_tree.do_one_simulation(self.__ANET.choose_epsilon_greedy, monte_carlo_game)
                 monte_carlo_game.reset(root_state)
+                number_of_rollouts += 1
+            # print(f'Rollouts: {number_of_rollouts}')
 
             target_distribution = monte_carlo_tree.get_normalized_distribution()
             self.__add_to_replay_buffer(root_state, target_distribution)

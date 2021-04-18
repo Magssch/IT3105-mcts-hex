@@ -13,6 +13,7 @@ EPISODES = 2000
 REPLAY_BUFFER_SIZE = 256
 
 # MCTS parameters
+MIN_NUMBER_OF_ROLLOUTS = 36
 SIMULATION_TIME_OUT = 0.005  # s
 UCT_C = 1  # "theoretically 1"
 
