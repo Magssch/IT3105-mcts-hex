@@ -1,7 +1,6 @@
 Verification:
 80
-88 
+88
 
 Official:
-43.5
-
+43.5 - LM
