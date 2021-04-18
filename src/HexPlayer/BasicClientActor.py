@@ -32,6 +32,9 @@ class BasicClientActor(BasicClientActorAbs):
 
         valid_actions = Hex.get_valid_actions(state)
         next_move = self.ANET.choose_greedy(state, valid_actions)
+        # Hvis vi vil ha random første trekk:
+        # if sum(state[1:]) == 0:
+        #     next_move = self.ANET.choose_uniform(valid_actions)
         row, column = Hex.index_to_coordinates(next_move, 6)
 
         return (row, column)
