@@ -1,0 +1,7 @@
+Verification:
+80
+88 
+
+Official:
+43.5
+
