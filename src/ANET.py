@@ -111,6 +111,12 @@ class ANET:
         action_probabilities /= np.sum(action_probabilities)  # normalize probability distribution
         return np.argmax(action_probabilities)
 
+    def choose_softmax(self, state: Tuple[int, ...], valid_actions: Tuple[int, ...], temperature: int) -> int:
+        action_probabilities = self.__model(tf.convert_to_tensor([state])).numpy().flatten()  # type: ignore
+        action_probabilities = action_probabilities * np.array(valid_actions)
+        action_probabilities = softmax(action_probabilities, temperature)
+        return np.random.choice(range(0, len(valid_actions)), 1, p=action_probabilities)[0]
+
     def fit(self, batch: np.ndarray) -> None:
         X, Y = batch[:, :parameters.STATE_SIZE], batch[:, parameters.STATE_SIZE:]
         history = self.__model.fit(X, Y, batch_size=parameters.ANET_BATCH_SIZE)
@@ -128,10 +134,5 @@ class ANET:
         return self.__name
 
 
-def deepnet_cross_entropy(targets, outs):
-    # Keith's cross-entropy formula
-    return tf.reduce_mean(tf.reduce_sum(-1 * targets * safelog(outs), axis=[1]))
-
-
-def safelog(tensor, base=0.0001):
-    return tf.math.log(tf.math.maximum(tensor, base))
+def softmax(x, temperature=1):
+    return np.exp(x / temperature) / sum(np.exp(x / temperature))
