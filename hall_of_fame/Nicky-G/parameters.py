@@ -27,6 +27,9 @@ NUMBER_OF_ACTIONS = SIZE ** 2 if GAME_TYPE == Game.Hex else int((SIZE ** 2 - SIZ
 # ANET
 ANET_EPSILON = 0.01
 ANET_EPSILON_DECAY = 1
+ANET_TEMPERATURE = 1
+ANET_TEMPERATURE_DECAY = 0.98
+
 ANET_LEARNING_RATE = 0.01
 ANET_LOSS_FUNCTION = mse  # deepnet_cross_entropy, kl_divergence
 ANET_ACTIVATION_FUNCTION = relu  # linear, relu, sigmoid, or tanh
