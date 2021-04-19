@@ -114,7 +114,7 @@ class ANET:
     def choose_softmax(self, state: Tuple[int, ...], valid_actions: Tuple[int, ...], temperature: int) -> int:
         action_probabilities = self.__model(tf.convert_to_tensor([state])).numpy().flatten()  # type: ignore
         action_probabilities = action_probabilities * np.array(valid_actions)
-        action_probabilities = softmax(action_probabilities, temperature)
+        action_probabilities = softmax_v2(action_probabilities, temperature)
         return np.random.choice(range(0, len(valid_actions)), 1, p=action_probabilities)[0]
 
     def fit(self, batch: np.ndarray) -> None:
@@ -134,5 +134,5 @@ class ANET:
         return self.__name
 
 
-def softmax(x, temperature=1):
+def softmax_v2(x, temperature=1):
     return np.exp(x / temperature) / sum(np.exp(x / temperature))
