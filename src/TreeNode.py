@@ -10,7 +10,7 @@ class TreeNode:
 
     player_reward = {
         1: 1,
-        2: -1
+        2: -10
     }
 
     def __init__(self, state: Tuple[int, ...], parent: Optional[TreeNode] = None) -> None:
